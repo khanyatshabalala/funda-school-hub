@@ -55,7 +55,7 @@ function Landing() {
               <span className="text-accent">Every parent.</span> One app.
             </h1>
             <p className="mt-6 text-lg text-white/70 max-w-2xl leading-relaxed">
-              Funda is the home–school bridge for South African families. See your child's marks, attendance and discipline in real time — and schools manage everything from one dashboard.
+              PASA — the Parent and School Alliance. See your child's marks, attendance and discipline in real time — and schools manage everything from one dashboard.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg shadow-accent/20">
@@ -79,7 +79,7 @@ function Landing() {
         <div className="max-w-2xl mb-12">
           <div className="text-sm font-medium text-accent mb-2">EVERYTHING IN ONE PLACE</div>
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight">School life, simplified.</h2>
-          <p className="text-muted-foreground mt-3">From the morning bell to the report card — Funda keeps everyone in sync.</p>
+          <p className="text-muted-foreground mt-3">From the morning bell to the report card — PASA keeps everyone in sync.</p>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
           <Feature icon={BookOpen} title="Marks & reports" body="Real-time results vs class average. Download for bursary applications." />
