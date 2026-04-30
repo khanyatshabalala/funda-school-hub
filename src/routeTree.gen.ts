@@ -13,10 +13,13 @@ import { Route as SchoolsRouteImport } from './routes/schools'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AppRouteImport } from './routes/app'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as SchoolsSchoolIdRouteImport } from './routes/schools.$schoolId'
+import { Route as SchoolAuthRouteImport } from './routes/school.auth'
 import { Route as AppUpgradeRouteImport } from './routes/app.upgrade'
 import { Route as AppTransfersRouteImport } from './routes/app.transfers'
 import { Route as AppStaffRouteImport } from './routes/app.staff'
@@ -54,6 +57,11 @@ const AppRoute = AppRouteImport.update({
   path: '/app',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -69,10 +77,20 @@ const AppIndexRoute = AppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppRoute,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
 const SchoolsSchoolIdRoute = SchoolsSchoolIdRouteImport.update({
   id: '/$schoolId',
   path: '/$schoolId',
   getParentRoute: () => SchoolsRoute,
+} as any)
+const SchoolAuthRoute = SchoolAuthRouteImport.update({
+  id: '/school/auth',
+  path: '/school/auth',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AppUpgradeRoute = AppUpgradeRouteImport.update({
   id: '/upgrade',
@@ -158,6 +176,7 @@ const AppAlertsRoute = AppAlertsRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRouteWithChildren
   '/app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
   '/pricing': typeof PricingRoute
@@ -178,7 +197,9 @@ export interface FileRoutesByFullPath {
   '/app/staff': typeof AppStaffRoute
   '/app/transfers': typeof AppTransfersRoute
   '/app/upgrade': typeof AppUpgradeRoute
+  '/school/auth': typeof SchoolAuthRoute
   '/schools/$schoolId': typeof SchoolsSchoolIdRoute
+  '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
 }
 export interface FileRoutesByTo {
@@ -203,13 +224,16 @@ export interface FileRoutesByTo {
   '/app/staff': typeof AppStaffRoute
   '/app/transfers': typeof AppTransfersRoute
   '/app/upgrade': typeof AppUpgradeRoute
+  '/school/auth': typeof SchoolAuthRoute
   '/schools/$schoolId': typeof SchoolsSchoolIdRoute
+  '/admin': typeof AdminIndexRoute
   '/app': typeof AppIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRouteWithChildren
   '/app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
   '/pricing': typeof PricingRoute
@@ -230,7 +254,9 @@ export interface FileRoutesById {
   '/app/staff': typeof AppStaffRoute
   '/app/transfers': typeof AppTransfersRoute
   '/app/upgrade': typeof AppUpgradeRoute
+  '/school/auth': typeof SchoolAuthRoute
   '/schools/$schoolId': typeof SchoolsSchoolIdRoute
+  '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
 }
 export interface FileRouteTypes {
@@ -238,6 +264,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/admin'
     | '/app'
     | '/auth'
     | '/pricing'
@@ -258,7 +285,9 @@ export interface FileRouteTypes {
     | '/app/staff'
     | '/app/transfers'
     | '/app/upgrade'
+    | '/school/auth'
     | '/schools/$schoolId'
+    | '/admin/'
     | '/app/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -283,12 +312,15 @@ export interface FileRouteTypes {
     | '/app/staff'
     | '/app/transfers'
     | '/app/upgrade'
+    | '/school/auth'
     | '/schools/$schoolId'
+    | '/admin'
     | '/app'
   id:
     | '__root__'
     | '/'
     | '/about'
+    | '/admin'
     | '/app'
     | '/auth'
     | '/pricing'
@@ -309,17 +341,21 @@ export interface FileRouteTypes {
     | '/app/staff'
     | '/app/transfers'
     | '/app/upgrade'
+    | '/school/auth'
     | '/schools/$schoolId'
+    | '/admin/'
     | '/app/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AdminRoute: typeof AdminRouteWithChildren
   AppRoute: typeof AppRouteWithChildren
   AuthRoute: typeof AuthRoute
   PricingRoute: typeof PricingRoute
   SchoolsRoute: typeof SchoolsRouteWithChildren
+  SchoolAuthRoute: typeof SchoolAuthRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -352,6 +388,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -373,12 +416,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/schools/$schoolId': {
       id: '/schools/$schoolId'
       path: '/$schoolId'
       fullPath: '/schools/$schoolId'
       preLoaderRoute: typeof SchoolsSchoolIdRouteImport
       parentRoute: typeof SchoolsRoute
+    }
+    '/school/auth': {
+      id: '/school/auth'
+      path: '/school/auth'
+      fullPath: '/school/auth'
+      preLoaderRoute: typeof SchoolAuthRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/app/upgrade': {
       id: '/app/upgrade'
@@ -495,6 +552,16 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AdminRouteChildren {
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 interface AppRouteChildren {
   AppAlertsRoute: typeof AppAlertsRoute
   AppAssistantRoute: typeof AppAssistantRoute
@@ -551,10 +618,12 @@ const SchoolsRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AdminRoute: AdminRouteWithChildren,
   AppRoute: AppRouteWithChildren,
   AuthRoute: AuthRoute,
   PricingRoute: PricingRoute,
   SchoolsRoute: SchoolsRouteWithChildren,
+  SchoolAuthRoute: SchoolAuthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
