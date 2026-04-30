@@ -2,7 +2,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarHeader, SidebarFooter } from "@/components/ui/sidebar";
 import { FundaLogo } from "./Logo";
 import { useAuth } from "@/lib/auth-context";
-import { Home, Users, BookOpen, CalendarDays, Bell, Shield, ArrowLeftRight, Settings, GraduationCap, ClipboardList, FileText, MessageCircle, Crown, LogOut } from "lucide-react";
+import { Home, Users, BookOpen, CalendarDays, Bell, Shield, ArrowLeftRight, GraduationCap, ClipboardList, FileText, MessageCircle, Crown, LogOut, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const parentItems = [
@@ -39,6 +39,7 @@ export function AppSidebar() {
   const isParent = primaryRole === "parent";
   const items = isParent ? parentItems : schoolBaseItems;
   const showAdmin = primaryRole === "principal" || primaryRole === "school_admin" || primaryRole === "super_admin";
+  const isSuper = primaryRole === "super_admin";
 
   return (
     <Sidebar>
@@ -86,6 +87,16 @@ export function AppSidebar() {
               <Link to="/app/upgrade" className="block rounded-lg p-3 bg-accent/15 border border-accent/30 hover:bg-accent/20 transition-colors">
                 <div className="flex items-center gap-2 text-accent font-semibold text-sm"><Crown className="size-4"/>Go Premium</div>
                 <div className="text-[11px] text-sidebar-foreground/60 mt-1">R19.99/mo · Unlimited children, instant alerts</div>
+              </Link>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+        {isSuper && (
+          <SidebarGroup>
+            <SidebarGroupContent className="px-2">
+              <Link to="/admin" className="block rounded-lg p-3 bg-accent/15 border border-accent/30 hover:bg-accent/20 transition-colors">
+                <div className="flex items-center gap-2 text-accent font-semibold text-sm"><ShieldCheck className="size-4"/>Admin Console</div>
+                <div className="text-[11px] text-sidebar-foreground/60 mt-1">Manage schools, districts & roles</div>
               </Link>
             </SidebarGroupContent>
           </SidebarGroup>
