@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { PageHeader } from "@/components/funda/dashboards/PageHeader";
 import { CalendarDays } from "lucide-react";
 
-export const Route = createFileRoute("/_app/calendar")({
+export const Route = createFileRoute("/app/calendar")({
   component: () => {
     const [events, setEvents] = useState<any[]>([]);
     useEffect(() => { supabase.from("calendar_events").select("*, schools(name)").gte("event_date", new Date().toISOString().slice(0,10)).order("event_date").limit(50).then(({data}) => setEvents(data ?? [])); }, []);

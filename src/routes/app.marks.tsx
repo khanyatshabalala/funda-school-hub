@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ParentDataList } from "@/components/funda/dashboards/SimplePage";
 import { Badge } from "@/components/ui/badge";
-export const Route = createFileRoute("/_app/marks")({
+export const Route = createFileRoute("/app/marks")({
   component: () => <ParentDataList title="Marks & reports" sub="All assessments for your children." table="marks"
     columns={[
       { key: "assessment_name", label: "Assessment" },

@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { PageHeader } from "@/components/funda/dashboards/PageHeader";
 import { Bell } from "lucide-react";
 
-export const Route = createFileRoute("/_app/alerts")({
+export const Route = createFileRoute("/app/alerts")({
   component: () => {
     const { user } = useAuth();
     const [items, setItems] = useState<any[]>([]);

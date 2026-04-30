@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/_app/children")({ component: ChildrenPage });
+export const Route = createFileRoute("/app/children")({ component: ChildrenPage });
 
 function ChildrenPage() {
   const { user } = useAuth();

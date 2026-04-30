@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { PageHeader } from "@/components/funda/dashboards/PageHeader";
 import { Loader2, Send, Sparkles } from "lucide-react";
 
-export const Route = createFileRoute("/_app/assistant")({
+export const Route = createFileRoute("/app/assistant")({
   component: () => {
     const [msgs, setMsgs] = useState<{role:string;content:string}[]>([
       { role: "assistant", content: "Hi! I'm your Funda assistant. Ask me anything about school admin, marks, or how to use the app." },

@@ -12,9 +12,27 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SchoolsRouteImport } from './routes/schools'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AppRouteImport } from './routes/app'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as SchoolsSchoolIdRouteImport } from './routes/schools.$schoolId'
+import { Route as AppUpgradeRouteImport } from './routes/app.upgrade'
+import { Route as AppTransfersRouteImport } from './routes/app.transfers'
+import { Route as AppStaffRouteImport } from './routes/app.staff'
+import { Route as AppMarksCaptureRouteImport } from './routes/app.marks-capture'
+import { Route as AppMarksRouteImport } from './routes/app.marks'
+import { Route as AppLearnersRouteImport } from './routes/app.learners'
+import { Route as AppDisciplineSchoolRouteImport } from './routes/app.discipline-school'
+import { Route as AppDisciplineRouteImport } from './routes/app.discipline'
+import { Route as AppClassesRouteImport } from './routes/app.classes'
+import { Route as AppChildrenRouteImport } from './routes/app.children'
+import { Route as AppCalendarRouteImport } from './routes/app.calendar'
+import { Route as AppAuditRouteImport } from './routes/app.audit'
+import { Route as AppAttendanceCaptureRouteImport } from './routes/app.attendance-capture'
+import { Route as AppAttendanceRouteImport } from './routes/app.attendance'
+import { Route as AppAssistantRouteImport } from './routes/app.assistant'
+import { Route as AppAlertsRouteImport } from './routes/app.alerts'
 
 const SchoolsRoute = SchoolsRouteImport.update({
   id: '/schools',
@@ -31,6 +49,11 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppRoute = AppRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -41,19 +64,122 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppIndexRoute = AppIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppRoute,
+} as any)
 const SchoolsSchoolIdRoute = SchoolsSchoolIdRouteImport.update({
   id: '/$schoolId',
   path: '/$schoolId',
   getParentRoute: () => SchoolsRoute,
 } as any)
+const AppUpgradeRoute = AppUpgradeRouteImport.update({
+  id: '/upgrade',
+  path: '/upgrade',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppTransfersRoute = AppTransfersRouteImport.update({
+  id: '/transfers',
+  path: '/transfers',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppStaffRoute = AppStaffRouteImport.update({
+  id: '/staff',
+  path: '/staff',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMarksCaptureRoute = AppMarksCaptureRouteImport.update({
+  id: '/marks-capture',
+  path: '/marks-capture',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMarksRoute = AppMarksRouteImport.update({
+  id: '/marks',
+  path: '/marks',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLearnersRoute = AppLearnersRouteImport.update({
+  id: '/learners',
+  path: '/learners',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDisciplineSchoolRoute = AppDisciplineSchoolRouteImport.update({
+  id: '/discipline-school',
+  path: '/discipline-school',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDisciplineRoute = AppDisciplineRouteImport.update({
+  id: '/discipline',
+  path: '/discipline',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppClassesRoute = AppClassesRouteImport.update({
+  id: '/classes',
+  path: '/classes',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppChildrenRoute = AppChildrenRouteImport.update({
+  id: '/children',
+  path: '/children',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCalendarRoute = AppCalendarRouteImport.update({
+  id: '/calendar',
+  path: '/calendar',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAuditRoute = AppAuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAttendanceCaptureRoute = AppAttendanceCaptureRouteImport.update({
+  id: '/attendance-capture',
+  path: '/attendance-capture',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAttendanceRoute = AppAttendanceRouteImport.update({
+  id: '/attendance',
+  path: '/attendance',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAssistantRoute = AppAssistantRouteImport.update({
+  id: '/assistant',
+  path: '/assistant',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAlertsRoute = AppAlertsRouteImport.update({
+  id: '/alerts',
+  path: '/alerts',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
   '/pricing': typeof PricingRoute
   '/schools': typeof SchoolsRouteWithChildren
+  '/app/alerts': typeof AppAlertsRoute
+  '/app/assistant': typeof AppAssistantRoute
+  '/app/attendance': typeof AppAttendanceRoute
+  '/app/attendance-capture': typeof AppAttendanceCaptureRoute
+  '/app/audit': typeof AppAuditRoute
+  '/app/calendar': typeof AppCalendarRoute
+  '/app/children': typeof AppChildrenRoute
+  '/app/classes': typeof AppClassesRoute
+  '/app/discipline': typeof AppDisciplineRoute
+  '/app/discipline-school': typeof AppDisciplineSchoolRoute
+  '/app/learners': typeof AppLearnersRoute
+  '/app/marks': typeof AppMarksRoute
+  '/app/marks-capture': typeof AppMarksCaptureRoute
+  '/app/staff': typeof AppStaffRoute
+  '/app/transfers': typeof AppTransfersRoute
+  '/app/upgrade': typeof AppUpgradeRoute
   '/schools/$schoolId': typeof SchoolsSchoolIdRoute
+  '/app/': typeof AppIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -61,41 +187,136 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/pricing': typeof PricingRoute
   '/schools': typeof SchoolsRouteWithChildren
+  '/app/alerts': typeof AppAlertsRoute
+  '/app/assistant': typeof AppAssistantRoute
+  '/app/attendance': typeof AppAttendanceRoute
+  '/app/attendance-capture': typeof AppAttendanceCaptureRoute
+  '/app/audit': typeof AppAuditRoute
+  '/app/calendar': typeof AppCalendarRoute
+  '/app/children': typeof AppChildrenRoute
+  '/app/classes': typeof AppClassesRoute
+  '/app/discipline': typeof AppDisciplineRoute
+  '/app/discipline-school': typeof AppDisciplineSchoolRoute
+  '/app/learners': typeof AppLearnersRoute
+  '/app/marks': typeof AppMarksRoute
+  '/app/marks-capture': typeof AppMarksCaptureRoute
+  '/app/staff': typeof AppStaffRoute
+  '/app/transfers': typeof AppTransfersRoute
+  '/app/upgrade': typeof AppUpgradeRoute
   '/schools/$schoolId': typeof SchoolsSchoolIdRoute
+  '/app': typeof AppIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
   '/pricing': typeof PricingRoute
   '/schools': typeof SchoolsRouteWithChildren
+  '/app/alerts': typeof AppAlertsRoute
+  '/app/assistant': typeof AppAssistantRoute
+  '/app/attendance': typeof AppAttendanceRoute
+  '/app/attendance-capture': typeof AppAttendanceCaptureRoute
+  '/app/audit': typeof AppAuditRoute
+  '/app/calendar': typeof AppCalendarRoute
+  '/app/children': typeof AppChildrenRoute
+  '/app/classes': typeof AppClassesRoute
+  '/app/discipline': typeof AppDisciplineRoute
+  '/app/discipline-school': typeof AppDisciplineSchoolRoute
+  '/app/learners': typeof AppLearnersRoute
+  '/app/marks': typeof AppMarksRoute
+  '/app/marks-capture': typeof AppMarksCaptureRoute
+  '/app/staff': typeof AppStaffRoute
+  '/app/transfers': typeof AppTransfersRoute
+  '/app/upgrade': typeof AppUpgradeRoute
   '/schools/$schoolId': typeof SchoolsSchoolIdRoute
+  '/app/': typeof AppIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/about'
+    | '/app'
     | '/auth'
     | '/pricing'
     | '/schools'
+    | '/app/alerts'
+    | '/app/assistant'
+    | '/app/attendance'
+    | '/app/attendance-capture'
+    | '/app/audit'
+    | '/app/calendar'
+    | '/app/children'
+    | '/app/classes'
+    | '/app/discipline'
+    | '/app/discipline-school'
+    | '/app/learners'
+    | '/app/marks'
+    | '/app/marks-capture'
+    | '/app/staff'
+    | '/app/transfers'
+    | '/app/upgrade'
     | '/schools/$schoolId'
+    | '/app/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/auth' | '/pricing' | '/schools' | '/schools/$schoolId'
-  id:
-    | '__root__'
+  to:
     | '/'
     | '/about'
     | '/auth'
     | '/pricing'
     | '/schools'
+    | '/app/alerts'
+    | '/app/assistant'
+    | '/app/attendance'
+    | '/app/attendance-capture'
+    | '/app/audit'
+    | '/app/calendar'
+    | '/app/children'
+    | '/app/classes'
+    | '/app/discipline'
+    | '/app/discipline-school'
+    | '/app/learners'
+    | '/app/marks'
+    | '/app/marks-capture'
+    | '/app/staff'
+    | '/app/transfers'
+    | '/app/upgrade'
     | '/schools/$schoolId'
+    | '/app'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/app'
+    | '/auth'
+    | '/pricing'
+    | '/schools'
+    | '/app/alerts'
+    | '/app/assistant'
+    | '/app/attendance'
+    | '/app/attendance-capture'
+    | '/app/audit'
+    | '/app/calendar'
+    | '/app/children'
+    | '/app/classes'
+    | '/app/discipline'
+    | '/app/discipline-school'
+    | '/app/learners'
+    | '/app/marks'
+    | '/app/marks-capture'
+    | '/app/staff'
+    | '/app/transfers'
+    | '/app/upgrade'
+    | '/schools/$schoolId'
+    | '/app/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AppRoute: typeof AppRouteWithChildren
   AuthRoute: typeof AuthRoute
   PricingRoute: typeof PricingRoute
   SchoolsRoute: typeof SchoolsRouteWithChildren
@@ -124,6 +345,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -138,6 +366,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/': {
+      id: '/app/'
+      path: '/'
+      fullPath: '/app/'
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/schools/$schoolId': {
       id: '/schools/$schoolId'
       path: '/$schoolId'
@@ -145,8 +380,162 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SchoolsSchoolIdRouteImport
       parentRoute: typeof SchoolsRoute
     }
+    '/app/upgrade': {
+      id: '/app/upgrade'
+      path: '/upgrade'
+      fullPath: '/app/upgrade'
+      preLoaderRoute: typeof AppUpgradeRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/transfers': {
+      id: '/app/transfers'
+      path: '/transfers'
+      fullPath: '/app/transfers'
+      preLoaderRoute: typeof AppTransfersRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/staff': {
+      id: '/app/staff'
+      path: '/staff'
+      fullPath: '/app/staff'
+      preLoaderRoute: typeof AppStaffRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/marks-capture': {
+      id: '/app/marks-capture'
+      path: '/marks-capture'
+      fullPath: '/app/marks-capture'
+      preLoaderRoute: typeof AppMarksCaptureRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/marks': {
+      id: '/app/marks'
+      path: '/marks'
+      fullPath: '/app/marks'
+      preLoaderRoute: typeof AppMarksRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/learners': {
+      id: '/app/learners'
+      path: '/learners'
+      fullPath: '/app/learners'
+      preLoaderRoute: typeof AppLearnersRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/discipline-school': {
+      id: '/app/discipline-school'
+      path: '/discipline-school'
+      fullPath: '/app/discipline-school'
+      preLoaderRoute: typeof AppDisciplineSchoolRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/discipline': {
+      id: '/app/discipline'
+      path: '/discipline'
+      fullPath: '/app/discipline'
+      preLoaderRoute: typeof AppDisciplineRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/classes': {
+      id: '/app/classes'
+      path: '/classes'
+      fullPath: '/app/classes'
+      preLoaderRoute: typeof AppClassesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/children': {
+      id: '/app/children'
+      path: '/children'
+      fullPath: '/app/children'
+      preLoaderRoute: typeof AppChildrenRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/calendar': {
+      id: '/app/calendar'
+      path: '/calendar'
+      fullPath: '/app/calendar'
+      preLoaderRoute: typeof AppCalendarRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/audit': {
+      id: '/app/audit'
+      path: '/audit'
+      fullPath: '/app/audit'
+      preLoaderRoute: typeof AppAuditRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/attendance-capture': {
+      id: '/app/attendance-capture'
+      path: '/attendance-capture'
+      fullPath: '/app/attendance-capture'
+      preLoaderRoute: typeof AppAttendanceCaptureRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/attendance': {
+      id: '/app/attendance'
+      path: '/attendance'
+      fullPath: '/app/attendance'
+      preLoaderRoute: typeof AppAttendanceRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/assistant': {
+      id: '/app/assistant'
+      path: '/assistant'
+      fullPath: '/app/assistant'
+      preLoaderRoute: typeof AppAssistantRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/alerts': {
+      id: '/app/alerts'
+      path: '/alerts'
+      fullPath: '/app/alerts'
+      preLoaderRoute: typeof AppAlertsRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
+
+interface AppRouteChildren {
+  AppAlertsRoute: typeof AppAlertsRoute
+  AppAssistantRoute: typeof AppAssistantRoute
+  AppAttendanceRoute: typeof AppAttendanceRoute
+  AppAttendanceCaptureRoute: typeof AppAttendanceCaptureRoute
+  AppAuditRoute: typeof AppAuditRoute
+  AppCalendarRoute: typeof AppCalendarRoute
+  AppChildrenRoute: typeof AppChildrenRoute
+  AppClassesRoute: typeof AppClassesRoute
+  AppDisciplineRoute: typeof AppDisciplineRoute
+  AppDisciplineSchoolRoute: typeof AppDisciplineSchoolRoute
+  AppLearnersRoute: typeof AppLearnersRoute
+  AppMarksRoute: typeof AppMarksRoute
+  AppMarksCaptureRoute: typeof AppMarksCaptureRoute
+  AppStaffRoute: typeof AppStaffRoute
+  AppTransfersRoute: typeof AppTransfersRoute
+  AppUpgradeRoute: typeof AppUpgradeRoute
+  AppIndexRoute: typeof AppIndexRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppAlertsRoute: AppAlertsRoute,
+  AppAssistantRoute: AppAssistantRoute,
+  AppAttendanceRoute: AppAttendanceRoute,
+  AppAttendanceCaptureRoute: AppAttendanceCaptureRoute,
+  AppAuditRoute: AppAuditRoute,
+  AppCalendarRoute: AppCalendarRoute,
+  AppChildrenRoute: AppChildrenRoute,
+  AppClassesRoute: AppClassesRoute,
+  AppDisciplineRoute: AppDisciplineRoute,
+  AppDisciplineSchoolRoute: AppDisciplineSchoolRoute,
+  AppLearnersRoute: AppLearnersRoute,
+  AppMarksRoute: AppMarksRoute,
+  AppMarksCaptureRoute: AppMarksCaptureRoute,
+  AppStaffRoute: AppStaffRoute,
+  AppTransfersRoute: AppTransfersRoute,
+  AppUpgradeRoute: AppUpgradeRoute,
+  AppIndexRoute: AppIndexRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 interface SchoolsRouteChildren {
   SchoolsSchoolIdRoute: typeof SchoolsSchoolIdRoute
@@ -162,6 +551,7 @@ const SchoolsRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AppRoute: AppRouteWithChildren,
   AuthRoute: AuthRoute,
   PricingRoute: PricingRoute,
   SchoolsRoute: SchoolsRouteWithChildren,

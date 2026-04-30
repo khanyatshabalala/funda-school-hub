@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/funda/dashboards/PageHeader";
 import { Check, Crown } from "lucide-react";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/_app/upgrade")({
+export const Route = createFileRoute("/app/upgrade")({
   component: () => {
     const benefits = [
       "Unlimited children at any school",
