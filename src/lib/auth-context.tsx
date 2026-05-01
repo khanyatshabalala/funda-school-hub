@@ -40,12 +40,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
+    let currentUid: string | null = null;
     const { data: sub } = supabase.auth.onAuthStateChange((_evt, sess) => {
       setSession(sess);
       setUser(sess?.user ?? null);
-      if (sess?.user) {
-        setTimeout(() => loadUserData(sess.user.id), 0);
-      } else {
+      const newUid = sess?.user?.id ?? null;
+      if (newUid && newUid !== currentUid) {
+        currentUid = newUid;
+        setTimeout(() => loadUserData(newUid), 0);
+      } else if (!newUid) {
+        currentUid = null;
         setRoles([]);
         setProfile(null);
       }
@@ -53,7 +57,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     supabase.auth.getSession().then(({ data: { session: sess } }) => {
       setSession(sess);
       setUser(sess?.user ?? null);
-      if (sess?.user) loadUserData(sess.user.id);
+      if (sess?.user) {
+        currentUid = sess.user.id;
+        loadUserData(sess.user.id);
+      }
       setLoading(false);
     });
     return () => sub.subscription.unsubscribe();
