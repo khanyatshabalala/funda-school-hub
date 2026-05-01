@@ -28,6 +28,7 @@ function SchoolsPage() {
   const [schools, setSchools] = useState<School[]>([]);
   const [q, setQ] = useState("");
   const [phase, setPhase] = useState<string>("all");
+  const [province, setProvince] = useState<string>("all");
   const [district, setDistrict] = useState<string>("all");
   const [loading, setLoading] = useState(true);
 
@@ -38,13 +39,28 @@ function SchoolsPage() {
     });
   }, []);
 
-  const districts = useMemo(() => Array.from(new Set(schools.map(s => s.district))).sort(), [schools]);
+  const provinces = useMemo(
+    () => Array.from(new Set(schools.map(s => s.province))).sort(),
+    [schools],
+  );
+  const districts = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          schools
+            .filter(s => province === "all" || s.province === province)
+            .map(s => s.district),
+        ),
+      ).sort(),
+    [schools, province],
+  );
 
   const filtered = schools.filter(s => {
     const matchQ = !q || s.name.toLowerCase().includes(q.toLowerCase()) || s.emis_number.includes(q);
     const matchPhase = phase === "all" || s.phase === phase;
+    const matchProvince = province === "all" || s.province === province;
     const matchDistrict = district === "all" || s.district === district;
-    return matchQ && matchPhase && matchDistrict;
+    return matchQ && matchPhase && matchProvince && matchDistrict;
   });
 
   return (
@@ -55,7 +71,7 @@ function SchoolsPage() {
           <div className="text-sm text-accent font-medium mb-2">SCHOOL EXPLORER</div>
           <h1 className="text-3xl md:text-5xl font-bold tracking-tight">Find a school in South Africa.</h1>
           <p className="mt-3 text-primary-foreground/70 max-w-xl">EMIS-verified profiles. Filter by district, phase and fees.</p>
-          <div className="mt-8 grid md:grid-cols-3 gap-3">
+          <div className="mt-8 grid md:grid-cols-4 gap-3">
             <div className="md:col-span-1 relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
               <Input
@@ -64,6 +80,19 @@ function SchoolsPage() {
                 className="pl-10 bg-white text-foreground border-0 h-11"
               />
             </div>
+            <Select
+              value={province}
+              onValueChange={(v) => {
+                setProvince(v);
+                setDistrict("all");
+              }}
+            >
+              <SelectTrigger className="bg-white text-foreground border-0 h-11"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All provinces</SelectItem>
+                {provinces.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}
+              </SelectContent>
+            </Select>
             <Select value={phase} onValueChange={setPhase}>
               <SelectTrigger className="bg-white text-foreground border-0 h-11"><SelectValue /></SelectTrigger>
               <SelectContent>
