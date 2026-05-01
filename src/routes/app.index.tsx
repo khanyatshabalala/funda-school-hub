@@ -6,6 +6,7 @@ import { SchoolOverview } from "@/components/funda/dashboards/SchoolOverview";
 export const Route = createFileRoute("/app/")({
   component: () => {
     const { primaryRole } = useAuth();
+    // Parents get the parent dashboard; all school roles (including super_admin) get school overview
     return primaryRole === "parent" ? <ParentOverview /> : <SchoolOverview />;
   },
 });

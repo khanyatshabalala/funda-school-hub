@@ -12,9 +12,11 @@ import { FundaLogo } from "@/components/funda/Logo";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
+import { friendlyAuthError } from "@/lib/auth-errors";
+
 export const Route = createFileRoute("/auth")({
   component: AuthPage,
-  head: () => ({ meta: [{ title: "Parent sign in · PASA" }]}),
+  head: () => ({ meta: [{ title: "Sign in · PASA" }] }),
 });
 
 const signInSchema = z.object({
@@ -25,48 +27,63 @@ const signUpSchema = signInSchema.extend({
   full_name: z.string().trim().min(2).max(100),
 });
 
+const STAFF_ROLES = ["super_admin", "school_admin", "principal", "teacher"];
+
 function AuthPage() {
   const navigate = useNavigate();
-  const { user, roles, loading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(false);
 
+  // If already signed in (e.g. page refresh), redirect immediately
   useEffect(() => {
-    if (authLoading || !user) return;
-    // Roles may briefly be empty while loading — wait until we have at least one row,
-    // then enforce parent-only on this portal.
-    if (roles.length === 0) return;
-    const staffRoles = ["super_admin", "school_admin", "principal", "teacher"];
-    const isStaff = roles.some((r) => staffRoles.includes(r.role));
-    if (isStaff) {
-      supabase.auth.signOut().then(() => {
-        toast.error("Staff accounts must sign in via the school portal.");
-        navigate({ to: "/school/auth" });
-      });
-      return;
-    }
-    navigate({ to: "/app" });
-  }, [user, roles, authLoading, navigate]);
+    if (!authLoading && user) navigate({ to: "/app" });
+  }, [user, authLoading, navigate]);
 
   const onSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
     const parsed = signInSchema.safeParse({ email: fd.get("email"), password: fd.get("password") });
     if (!parsed.success) return toast.error(parsed.error.issues[0].message);
+
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword(parsed.data);
-    setLoading(false);
-    if (error) return toast.error(error.message);
-    toast.success("Signed in — checking access…");
-    // useEffect handles redirect after roles load.
+
+    const { data, error } = await supabase.auth.signInWithPassword(parsed.data);
+    if (error) {
+      setLoading(false);
+      return toast.error(friendlyAuthError(error));
+    }
+
+    // Fetch roles immediately — we have the session right now
+    const { data: roleRows } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", data.user.id);
+
+    const roles = (roleRows ?? []).map((r) => r.role);
+    const isStaff = roles.some((r) => STAFF_ROLES.includes(r));
+
+    if (isStaff) {
+      await supabase.auth.signOut();
+      setLoading(false);
+      toast.error("Staff accounts sign in via the school portal.");
+      navigate({ to: "/school/auth" });
+      return;
+    }
+
+    // Parent — go straight to dashboard, no intermediate screen
+    navigate({ to: "/app" });
   };
 
   const onSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
     const parsed = signUpSchema.safeParse({
-      email: fd.get("email"), password: fd.get("password"), full_name: fd.get("full_name"),
+      email: fd.get("email"),
+      password: fd.get("password"),
+      full_name: fd.get("full_name"),
     });
     if (!parsed.success) return toast.error(parsed.error.issues[0].message);
+
     setLoading(true);
     const { error } = await supabase.auth.signUp({
       email: parsed.data.email,
@@ -77,7 +94,7 @@ function AuthPage() {
       },
     });
     setLoading(false);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyAuthError(error));
     toast.success("Check your email to verify your account.");
   };
 
@@ -86,7 +103,7 @@ function AuthPage() {
       provider: "google",
       options: { redirectTo: `${window.location.origin}/app` },
     });
-    if (error) toast.error(error.message);
+    if (error) toast.error(friendlyAuthError(error));
   };
 
   return (
@@ -95,42 +112,80 @@ function AuthPage() {
         <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)", backgroundSize: "24px 24px" }} />
         <FundaLogo light />
         <div className="relative">
-          <h2 className="text-3xl font-bold leading-tight">Every school. <br/><span className="text-accent">Every parent.</span> One app.</h2>
-          <p className="mt-4 text-primary-foreground/70 max-w-sm">Marks, attendance, discipline and transfers — all in one place.</p>
+          <h2 className="text-3xl font-bold leading-tight">
+            Every school. <br /><span className="text-accent">Every parent.</span> One app.
+          </h2>
+          <p className="mt-4 text-primary-foreground/70 max-w-sm">
+            Marks, attendance, discipline and transfers — all in one place.
+          </p>
         </div>
         <div className="text-xs text-primary-foreground/50">© PASA · Made for South Africa</div>
       </div>
+
       <div className="flex items-center justify-center p-6 bg-background">
         <Card className="p-8 w-full max-w-md">
           <div className="lg:hidden mb-6"><FundaLogo /></div>
           <div className="mb-4">
             <h1 className="text-xl font-semibold">For parents</h1>
-            <p className="text-xs text-muted-foreground mt-1">School staff: <a href="/school/auth" className="text-accent hover:underline">sign in here</a></p>
+            <p className="text-xs text-muted-foreground mt-1">
+              School staff: <a href="/school/auth" className="text-accent hover:underline">sign in here</a>
+            </p>
           </div>
+
           <Tabs defaultValue="signin">
             <TabsList className="grid grid-cols-2 w-full">
               <TabsTrigger value="signin">Sign in</TabsTrigger>
               <TabsTrigger value="signup">Sign up</TabsTrigger>
             </TabsList>
+
             <TabsContent value="signin">
               <form onSubmit={onSignIn} className="space-y-4 mt-6">
-                <div><Label htmlFor="si-email">Email</Label><Input id="si-email" name="email" type="email" required autoComplete="email" /></div>
-                <div><Label htmlFor="si-pw">Password</Label><Input id="si-pw" name="password" type="password" required autoComplete="current-password" /></div>
-                <Button disabled={loading} className="w-full bg-accent text-accent-foreground hover:bg-accent/90">{loading && <Loader2 className="size-4 animate-spin mr-2"/>}Sign in</Button>
+                <div>
+                  <Label htmlFor="si-email">Email</Label>
+                  <Input id="si-email" name="email" type="email" required autoComplete="email" />
+                </div>
+                <div>
+                  <Label htmlFor="si-pw">Password</Label>
+                  <Input id="si-pw" name="password" type="password" required autoComplete="current-password" />
+                </div>
+                <Button disabled={loading} className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
+                  {loading ? <Loader2 className="size-4 animate-spin" /> : "Sign in"}
+                </Button>
               </form>
             </TabsContent>
+
             <TabsContent value="signup">
               <form onSubmit={onSignUp} className="space-y-4 mt-6">
-                <div><Label htmlFor="su-name">Full name</Label><Input id="su-name" name="full_name" required /></div>
-                <div><Label htmlFor="su-email">Email</Label><Input id="su-email" name="email" type="email" required autoComplete="email" /></div>
-                <div><Label htmlFor="su-pw">Password</Label><Input id="su-pw" name="password" type="password" required autoComplete="new-password" minLength={6} /></div>
-                <Button disabled={loading} className="w-full bg-accent text-accent-foreground hover:bg-accent/90">{loading && <Loader2 className="size-4 animate-spin mr-2"/>}Create account</Button>
+                <div>
+                  <Label htmlFor="su-name">Full name</Label>
+                  <Input id="su-name" name="full_name" required />
+                </div>
+                <div>
+                  <Label htmlFor="su-email">Email</Label>
+                  <Input id="su-email" name="email" type="email" required autoComplete="email" />
+                </div>
+                <div>
+                  <Label htmlFor="su-pw">Password</Label>
+                  <Input id="su-pw" name="password" type="password" required autoComplete="new-password" minLength={6} />
+                </div>
+                <Button disabled={loading} className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
+                  {loading ? <Loader2 className="size-4 animate-spin" /> : "Create account"}
+                </Button>
               </form>
             </TabsContent>
           </Tabs>
-          <div className="my-5 flex items-center gap-3 text-xs text-muted-foreground"><div className="h-px flex-1 bg-border"/>OR<div className="h-px flex-1 bg-border"/></div>
+
+          <div className="my-5 flex items-center gap-3 text-xs text-muted-foreground">
+            <div className="h-px flex-1 bg-border" />OR<div className="h-px flex-1 bg-border" />
+          </div>
+
           <Button onClick={onGoogle} variant="outline" className="w-full">
-            <svg className="size-4 mr-2" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A10.99 10.99 0 0012 23z"/><path fill="#FBBC05" d="M5.84 14.1A6.6 6.6 0 015.5 12c0-.73.13-1.43.34-2.1V7.07H2.18A11 11 0 001 12c0 1.78.43 3.46 1.18 4.93l3.66-2.83z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.83C6.71 7.31 9.14 5.38 12 5.38z"/></svg>
+            <svg className="size-4 mr-2" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A10.99 10.99 0 0012 23z" />
+              <path fill="#FBBC05" d="M5.84 14.1A6.6 6.6 0 015.5 12c0-.73.13-1.43.34-2.1V7.07H2.18A11 11 0 001 12c0 1.78.43 3.46 1.18 4.93l3.66-2.83z" />
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.83C6.71 7.31 9.14 5.38 12 5.38z" />
+            </svg>
             Continue with Google
           </Button>
         </Card>

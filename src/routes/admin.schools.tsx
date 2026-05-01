@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,8 +9,10 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Plus, Loader2, Building2 } from "lucide-react";
+import { Plus, Loader2, Building2, Pencil } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+
+import { friendlyDbError } from "@/lib/db-errors";
 
 export const Route = createFileRoute("/admin/schools")({
   component: SchoolsPage,
@@ -20,8 +22,9 @@ const PROVINCES = [
   "Eastern Cape", "Free State", "Gauteng", "KwaZulu-Natal", "Limpopo",
   "Mpumalanga", "Northern Cape", "North West", "Western Cape",
 ] as const;
-const PHASES = ["Primary", "Secondary", "Combined", "ECD"] as const;
-const TYPES = ["public", "independent", "private"] as const;
+const PHASES = ["primary", "secondary", "combined", "ecd"] as const;
+const PHASE_LABELS: Record<string, string> = { primary: "Primary", secondary: "Secondary", combined: "Combined", ecd: "ECD" };
+const TYPES = ["public", "independent", "private", "special"] as const;
 
 const schema = z.object({
   name: z.string().trim().min(2).max(200),
@@ -95,7 +98,7 @@ function SchoolsPage() {
       district_id: districtId || null,
     });
     setSaving(false);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyDbError(error, { duplicate: "A school with that EMIS number already exists." }));
     toast.success("School created");
     setOpen(false);
     setDistrictId("");
@@ -170,7 +173,7 @@ function SchoolsPage() {
                   <Label>Phase</Label>
                   <Select value={phase} onValueChange={setPhase}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>{PHASES.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}</SelectContent>
+                    <SelectContent>{PHASES.map(p => <SelectItem key={p} value={p}>{PHASE_LABELS[p]}</SelectItem>)}</SelectContent>
                   </Select>
                 </div>
                 <div>
@@ -202,14 +205,15 @@ function SchoolsPage() {
           <table className="w-full text-sm">
             <thead className="bg-muted/50 text-left text-xs text-muted-foreground">
               <tr>
-                <th className="p-3">School</th>
-                <th className="p-3">EMIS</th>
-                <th className="p-3">District</th>
-                <th className="p-3">Province</th>
-                <th className="p-3">Phase</th>
-                <th className="p-3">Type</th>
-                <th className="p-3">Learners</th>
-              </tr>
+                  <th className="p-3">School</th>
+                  <th className="p-3">EMIS</th>
+                  <th className="p-3">District</th>
+                  <th className="p-3">Province</th>
+                  <th className="p-3">Phase</th>
+                  <th className="p-3">Type</th>
+                  <th className="p-3">Learners</th>
+                  <th className="p-3 w-16"></th>
+                </tr>
             </thead>
             <tbody>
               {rows.map(r => (
@@ -218,9 +222,16 @@ function SchoolsPage() {
                   <td className="p-3 text-muted-foreground">{r.emis_number}</td>
                   <td className="p-3">{r.districts?.name ?? r.district}</td>
                   <td className="p-3 text-muted-foreground">{r.province}</td>
-                  <td className="p-3"><Badge variant="secondary">{r.phase}</Badge></td>
+                  <td className="p-3"><Badge variant="secondary">{PHASE_LABELS[r.phase] ?? r.phase}</Badge></td>
                   <td className="p-3 capitalize text-muted-foreground">{r.school_type}</td>
                   <td className="p-3">{r.learner_count ?? 0}</td>
+                  <td className="p-3 text-right">
+                    <Button asChild size="icon" variant="ghost" className="size-7">
+                      <Link to="/admin/schools/$schoolId" params={{ schoolId: r.id }}>
+                        <Pencil className="size-3.5" />
+                      </Link>
+                    </Button>
+                  </td>
                 </tr>
               ))}
             </tbody>

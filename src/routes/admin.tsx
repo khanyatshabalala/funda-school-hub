@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
 import { FundaLogo } from "@/components/funda/Logo";
-import { Building2, Map, Users, LayoutDashboard, LogOut, ArrowLeft } from "lucide-react";
+import { Building2, Map, Users, LayoutDashboard, LogOut, ArrowLeft, Settings, Trophy } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
   component: AdminLayout,
@@ -11,14 +11,14 @@ export const Route = createFileRoute("/admin")({
 });
 
 const items = [
-  { to: "/admin", title: "Overview", icon: LayoutDashboard, exact: true },
-  { to: "/admin/schools", title: "Schools", icon: Building2 },
-  { to: "/admin/districts", title: "Districts", icon: Map },
-  { to: "/admin/users", title: "Users & roles", icon: Users },
+  { to: "/admin",          title: "Overview",   icon: LayoutDashboard, exact: true },
+  { to: "/admin/schools",  title: "Schools",    icon: Building2 },
+  { to: "/admin/districts",title: "Districts",  icon: Map },
+  { to: "/admin/users",    title: "Users & roles", icon: Users },
 ];
 
 function AdminLayout() {
-  const { user, loading, primaryRole, signOut, profile } = useAuth();
+  const { user, loading, primaryRole, signOut, profile, displayName } = useAuth();
   const navigate = useNavigate();
   const path = useRouterState({ select: r => r.location.pathname });
 
@@ -61,12 +61,20 @@ function AdminLayout() {
             <ArrowLeft className="size-3.5" /> Back to dashboard
           </Link>
         </div>
-        <div className="p-3 border-t border-white/10 flex items-center justify-between">
-          <div className="min-w-0">
-            <div className="text-xs font-medium truncate">{profile?.full_name ?? "Admin"}</div>
-            <div className="text-[10px] text-accent">Super Admin</div>
-          </div>
-          <Button size="icon" variant="ghost" onClick={() => signOut()} className="text-primary-foreground hover:bg-white/10">
+        <div className="p-3 border-t border-white/10 flex items-center justify-between gap-2">
+          <Link
+            to="/app/profile"
+            className="flex items-center gap-2 min-w-0 flex-1 rounded-md px-2 py-1.5 hover:bg-white/5 transition-colors"
+          >
+            <div className="size-7 rounded-full bg-accent/20 text-accent grid place-items-center shrink-0">
+              <Settings className="size-3.5" />
+            </div>
+            <div className="min-w-0">
+              <div className="text-xs font-medium text-primary-foreground truncate">{displayName ?? "Admin"}</div>
+              <div className="text-[10px] text-accent">Super Admin</div>
+            </div>
+          </Link>
+          <Button size="icon" variant="ghost" onClick={() => signOut()} className="text-primary-foreground hover:bg-white/10 shrink-0" title="Sign out">
             <LogOut className="size-4" />
           </Button>
         </div>

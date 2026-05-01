@@ -23,6 +23,8 @@ import { Route as SchoolAuthRouteImport } from './routes/school.auth'
 import { Route as AppUpgradeRouteImport } from './routes/app.upgrade'
 import { Route as AppTransfersRouteImport } from './routes/app.transfers'
 import { Route as AppStaffRouteImport } from './routes/app.staff'
+import { Route as AppSchoolsRouteImport } from './routes/app.schools'
+import { Route as AppProfileRouteImport } from './routes/app.profile'
 import { Route as AppMarksCaptureRouteImport } from './routes/app.marks-capture'
 import { Route as AppMarksRouteImport } from './routes/app.marks'
 import { Route as AppLearnersRouteImport } from './routes/app.learners'
@@ -39,6 +41,7 @@ import { Route as AppAlertsRouteImport } from './routes/app.alerts'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminSchoolsRouteImport } from './routes/admin.schools'
 import { Route as AdminDistrictsRouteImport } from './routes/admin.districts'
+import { Route as AdminSchoolsSchoolIdRouteImport } from './routes/admin.schools.$schoolId'
 
 const SchoolsRoute = SchoolsRouteImport.update({
   id: '/schools',
@@ -108,6 +111,16 @@ const AppTransfersRoute = AppTransfersRouteImport.update({
 const AppStaffRoute = AppStaffRouteImport.update({
   id: '/staff',
   path: '/staff',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSchoolsRoute = AppSchoolsRouteImport.update({
+  id: '/schools',
+  path: '/schools',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppProfileRoute = AppProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => AppRoute,
 } as any)
 const AppMarksCaptureRoute = AppMarksCaptureRouteImport.update({
@@ -190,6 +203,11 @@ const AdminDistrictsRoute = AdminDistrictsRouteImport.update({
   path: '/districts',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminSchoolsSchoolIdRoute = AdminSchoolsSchoolIdRouteImport.update({
+  id: '/$schoolId',
+  path: '/$schoolId',
+  getParentRoute: () => AdminSchoolsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -200,7 +218,7 @@ export interface FileRoutesByFullPath {
   '/pricing': typeof PricingRoute
   '/schools': typeof SchoolsRouteWithChildren
   '/admin/districts': typeof AdminDistrictsRoute
-  '/admin/schools': typeof AdminSchoolsRoute
+  '/admin/schools': typeof AdminSchoolsRouteWithChildren
   '/admin/users': typeof AdminUsersRoute
   '/app/alerts': typeof AppAlertsRoute
   '/app/assistant': typeof AppAssistantRoute
@@ -215,6 +233,8 @@ export interface FileRoutesByFullPath {
   '/app/learners': typeof AppLearnersRoute
   '/app/marks': typeof AppMarksRoute
   '/app/marks-capture': typeof AppMarksCaptureRoute
+  '/app/profile': typeof AppProfileRoute
+  '/app/schools': typeof AppSchoolsRoute
   '/app/staff': typeof AppStaffRoute
   '/app/transfers': typeof AppTransfersRoute
   '/app/upgrade': typeof AppUpgradeRoute
@@ -222,6 +242,7 @@ export interface FileRoutesByFullPath {
   '/schools/$schoolId': typeof SchoolsSchoolIdRoute
   '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
+  '/admin/schools/$schoolId': typeof AdminSchoolsSchoolIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -230,7 +251,7 @@ export interface FileRoutesByTo {
   '/pricing': typeof PricingRoute
   '/schools': typeof SchoolsRouteWithChildren
   '/admin/districts': typeof AdminDistrictsRoute
-  '/admin/schools': typeof AdminSchoolsRoute
+  '/admin/schools': typeof AdminSchoolsRouteWithChildren
   '/admin/users': typeof AdminUsersRoute
   '/app/alerts': typeof AppAlertsRoute
   '/app/assistant': typeof AppAssistantRoute
@@ -245,6 +266,8 @@ export interface FileRoutesByTo {
   '/app/learners': typeof AppLearnersRoute
   '/app/marks': typeof AppMarksRoute
   '/app/marks-capture': typeof AppMarksCaptureRoute
+  '/app/profile': typeof AppProfileRoute
+  '/app/schools': typeof AppSchoolsRoute
   '/app/staff': typeof AppStaffRoute
   '/app/transfers': typeof AppTransfersRoute
   '/app/upgrade': typeof AppUpgradeRoute
@@ -252,6 +275,7 @@ export interface FileRoutesByTo {
   '/schools/$schoolId': typeof SchoolsSchoolIdRoute
   '/admin': typeof AdminIndexRoute
   '/app': typeof AppIndexRoute
+  '/admin/schools/$schoolId': typeof AdminSchoolsSchoolIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -263,7 +287,7 @@ export interface FileRoutesById {
   '/pricing': typeof PricingRoute
   '/schools': typeof SchoolsRouteWithChildren
   '/admin/districts': typeof AdminDistrictsRoute
-  '/admin/schools': typeof AdminSchoolsRoute
+  '/admin/schools': typeof AdminSchoolsRouteWithChildren
   '/admin/users': typeof AdminUsersRoute
   '/app/alerts': typeof AppAlertsRoute
   '/app/assistant': typeof AppAssistantRoute
@@ -278,6 +302,8 @@ export interface FileRoutesById {
   '/app/learners': typeof AppLearnersRoute
   '/app/marks': typeof AppMarksRoute
   '/app/marks-capture': typeof AppMarksCaptureRoute
+  '/app/profile': typeof AppProfileRoute
+  '/app/schools': typeof AppSchoolsRoute
   '/app/staff': typeof AppStaffRoute
   '/app/transfers': typeof AppTransfersRoute
   '/app/upgrade': typeof AppUpgradeRoute
@@ -285,6 +311,7 @@ export interface FileRoutesById {
   '/schools/$schoolId': typeof SchoolsSchoolIdRoute
   '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
+  '/admin/schools/$schoolId': typeof AdminSchoolsSchoolIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -312,6 +339,8 @@ export interface FileRouteTypes {
     | '/app/learners'
     | '/app/marks'
     | '/app/marks-capture'
+    | '/app/profile'
+    | '/app/schools'
     | '/app/staff'
     | '/app/transfers'
     | '/app/upgrade'
@@ -319,6 +348,7 @@ export interface FileRouteTypes {
     | '/schools/$schoolId'
     | '/admin/'
     | '/app/'
+    | '/admin/schools/$schoolId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -342,6 +372,8 @@ export interface FileRouteTypes {
     | '/app/learners'
     | '/app/marks'
     | '/app/marks-capture'
+    | '/app/profile'
+    | '/app/schools'
     | '/app/staff'
     | '/app/transfers'
     | '/app/upgrade'
@@ -349,6 +381,7 @@ export interface FileRouteTypes {
     | '/schools/$schoolId'
     | '/admin'
     | '/app'
+    | '/admin/schools/$schoolId'
   id:
     | '__root__'
     | '/'
@@ -374,6 +407,8 @@ export interface FileRouteTypes {
     | '/app/learners'
     | '/app/marks'
     | '/app/marks-capture'
+    | '/app/profile'
+    | '/app/schools'
     | '/app/staff'
     | '/app/transfers'
     | '/app/upgrade'
@@ -381,6 +416,7 @@ export interface FileRouteTypes {
     | '/schools/$schoolId'
     | '/admin/'
     | '/app/'
+    | '/admin/schools/$schoolId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -492,6 +528,20 @@ declare module '@tanstack/react-router' {
       path: '/staff'
       fullPath: '/app/staff'
       preLoaderRoute: typeof AppStaffRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/schools': {
+      id: '/app/schools'
+      path: '/schools'
+      fullPath: '/app/schools'
+      preLoaderRoute: typeof AppSchoolsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/profile': {
+      id: '/app/profile'
+      path: '/profile'
+      fullPath: '/app/profile'
+      preLoaderRoute: typeof AppProfileRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/marks-capture': {
@@ -606,19 +656,38 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDistrictsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/schools/$schoolId': {
+      id: '/admin/schools/$schoolId'
+      path: '/$schoolId'
+      fullPath: '/admin/schools/$schoolId'
+      preLoaderRoute: typeof AdminSchoolsSchoolIdRouteImport
+      parentRoute: typeof AdminSchoolsRoute
+    }
   }
 }
 
+interface AdminSchoolsRouteChildren {
+  AdminSchoolsSchoolIdRoute: typeof AdminSchoolsSchoolIdRoute
+}
+
+const AdminSchoolsRouteChildren: AdminSchoolsRouteChildren = {
+  AdminSchoolsSchoolIdRoute: AdminSchoolsSchoolIdRoute,
+}
+
+const AdminSchoolsRouteWithChildren = AdminSchoolsRoute._addFileChildren(
+  AdminSchoolsRouteChildren,
+)
+
 interface AdminRouteChildren {
   AdminDistrictsRoute: typeof AdminDistrictsRoute
-  AdminSchoolsRoute: typeof AdminSchoolsRoute
+  AdminSchoolsRoute: typeof AdminSchoolsRouteWithChildren
   AdminUsersRoute: typeof AdminUsersRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminDistrictsRoute: AdminDistrictsRoute,
-  AdminSchoolsRoute: AdminSchoolsRoute,
+  AdminSchoolsRoute: AdminSchoolsRouteWithChildren,
   AdminUsersRoute: AdminUsersRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
@@ -639,6 +708,8 @@ interface AppRouteChildren {
   AppLearnersRoute: typeof AppLearnersRoute
   AppMarksRoute: typeof AppMarksRoute
   AppMarksCaptureRoute: typeof AppMarksCaptureRoute
+  AppProfileRoute: typeof AppProfileRoute
+  AppSchoolsRoute: typeof AppSchoolsRoute
   AppStaffRoute: typeof AppStaffRoute
   AppTransfersRoute: typeof AppTransfersRoute
   AppUpgradeRoute: typeof AppUpgradeRoute
@@ -659,6 +730,8 @@ const AppRouteChildren: AppRouteChildren = {
   AppLearnersRoute: AppLearnersRoute,
   AppMarksRoute: AppMarksRoute,
   AppMarksCaptureRoute: AppMarksCaptureRoute,
+  AppProfileRoute: AppProfileRoute,
+  AppSchoolsRoute: AppSchoolsRoute,
   AppStaffRoute: AppStaffRoute,
   AppTransfersRoute: AppTransfersRoute,
   AppUpgradeRoute: AppUpgradeRoute,

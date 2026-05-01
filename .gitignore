@@ -20,6 +20,18 @@ dist-ssr
 .wrangler/
 .dev.vars
 
+# Environment variables — never commit secrets
+.env
+.env.*
+!.env.example
+
+# Supabase local dev
+supabase/.branches
+supabase/.temp
+
+# Seed migration with credentials — delete after running supabase db push
+supabase/migrations/20260501140000_seed-super-admin-account.sql
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

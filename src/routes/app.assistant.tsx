@@ -29,7 +29,7 @@ export const Route = createFileRoute("/app/assistant")({
 
     return (
       <div className="max-w-3xl">
-        <PageHeader title="AI Assistant" sub="Powered by Lovable AI." action={<Sparkles className="size-5 text-accent"/>}/>
+        <PageHeader title="AI Assistant" sub="Ask anything about your child's school journey." action={<Sparkles className="size-5 text-accent"/>}/>
         <Card className="flex flex-col h-[calc(100vh-220px)]">
           <div className="flex-1 overflow-y-auto p-5 space-y-4">
             {msgs.map((m, i) => (

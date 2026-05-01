@@ -11,6 +11,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { toast } from "sonner";
 import { Plus, Loader2, Trash2 } from "lucide-react";
 
+import { friendlyDbError } from "@/lib/db-errors";
+
 export const Route = createFileRoute("/admin/districts")({
   component: DistrictsPage,
 });
@@ -56,7 +58,7 @@ function DistrictsPage() {
       code: parsed.data.code || null,
     });
     setSaving(false);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyDbError(error, { duplicate: "A district with that name already exists in this province." }));
     toast.success("District created");
     setOpen(false);
     load();
@@ -65,7 +67,7 @@ function DistrictsPage() {
   const onDelete = async (id: string) => {
     if (!confirm("Delete this district? Schools linked to it will be unlinked.")) return;
     const { error } = await supabase.from("districts").delete().eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyDbError(error));
     toast.success("Deleted");
     load();
   };
