@@ -27,12 +27,25 @@ const signUpSchema = signInSchema.extend({
 
 function AuthPage() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, roles, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (user) navigate({ to: "/app" });
-  }, [user, navigate]);
+    if (authLoading || !user) return;
+    // Roles may briefly be empty while loading — wait until we have at least one row,
+    // then enforce parent-only on this portal.
+    if (roles.length === 0) return;
+    const staffRoles = ["super_admin", "school_admin", "principal", "teacher"];
+    const isStaff = roles.some((r) => staffRoles.includes(r.role));
+    if (isStaff) {
+      supabase.auth.signOut().then(() => {
+        toast.error("Staff accounts must sign in via the school portal.");
+        navigate({ to: "/school/auth" });
+      });
+      return;
+    }
+    navigate({ to: "/app" });
+  }, [user, roles, authLoading, navigate]);
 
   const onSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -43,8 +56,8 @@ function AuthPage() {
     const { error } = await supabase.auth.signInWithPassword(parsed.data);
     setLoading(false);
     if (error) return toast.error(error.message);
-    toast.success("Welcome back!");
-    navigate({ to: "/app" });
+    toast.success("Signed in — checking access…");
+    // useEffect handles redirect after roles load.
   };
 
   const onSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
