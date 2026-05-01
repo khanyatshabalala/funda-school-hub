@@ -23,12 +23,28 @@ const schema = z.object({
 
 function SchoolAuth() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, roles, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(false);
 
+  // Once we have a signed-in user AND their roles loaded, gate by role.
   useEffect(() => {
-    if (user) navigate({ to: "/app" });
-  }, [user, navigate]);
+    if (authLoading || !user) return;
+    const staffRoles = ["super_admin", "school_admin", "principal", "teacher"];
+    const isStaff = roles.some((r) => staffRoles.includes(r.role));
+    if (!isStaff) {
+      // Parent account tried to use the staff portal — kick them out.
+      supabase.auth.signOut().then(() => {
+        toast.error("This portal is for school staff only. Please use the parent sign-in.");
+        navigate({ to: "/auth" });
+      });
+      return;
+    }
+    if (roles.some((r) => r.role === "super_admin")) {
+      navigate({ to: "/admin" });
+    } else {
+      navigate({ to: "/app" });
+    }
+  }, [user, roles, authLoading, navigate]);
 
   const onSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -39,8 +55,8 @@ function SchoolAuth() {
     const { error } = await supabase.auth.signInWithPassword(parsed.data);
     setLoading(false);
     if (error) return toast.error(error.message);
-    toast.success("Welcome back!");
-    navigate({ to: "/app" });
+    toast.success("Signed in — checking access…");
+    // The useEffect above will redirect once roles load.
   };
 
   return (
