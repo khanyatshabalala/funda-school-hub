@@ -95,6 +95,7 @@ export type Database = {
       }
       calendar_events: {
         Row: {
+          class_id: string | null
           created_at: string
           created_by: string | null
           description: string | null
@@ -106,6 +107,7 @@ export type Database = {
           title: string
         }
         Insert: {
+          class_id?: string | null
           created_at?: string
           created_by?: string | null
           description?: string | null
@@ -117,6 +119,7 @@ export type Database = {
           title: string
         }
         Update: {
+          class_id?: string | null
           created_at?: string
           created_by?: string | null
           description?: string | null
@@ -128,6 +131,13 @@ export type Database = {
           title?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "calendar_events_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "calendar_events_school_id_fkey"
             columns: ["school_id"]
@@ -412,6 +422,39 @@ export type Database = {
           },
         ]
       }
+      national_calendar: {
+        Row: {
+          created_at: string
+          description: string | null
+          end_date: string | null
+          event_date: string
+          event_type: string
+          id: string
+          title: string
+          year: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          end_date?: string | null
+          event_date: string
+          event_type: string
+          id?: string
+          title: string
+          year: number
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          end_date?: string | null
+          event_date?: string
+          event_type?: string
+          id?: string
+          title?: string
+          year?: number
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           body: string | null
@@ -444,6 +487,59 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      parent_link_requests: {
+        Row: {
+          created_at: string
+          first_name: string
+          id: string
+          last_name: string
+          learner_number: string
+          parent_user_id: string
+          rejection_reason: string | null
+          relationship: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          school_id: string
+          status: Database["public"]["Enums"]["link_request_status"]
+        }
+        Insert: {
+          created_at?: string
+          first_name: string
+          id?: string
+          last_name: string
+          learner_number: string
+          parent_user_id: string
+          rejection_reason?: string | null
+          relationship?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          school_id: string
+          status?: Database["public"]["Enums"]["link_request_status"]
+        }
+        Update: {
+          created_at?: string
+          first_name?: string
+          id?: string
+          last_name?: string
+          learner_number?: string
+          parent_user_id?: string
+          rejection_reason?: string | null
+          relationship?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          school_id?: string
+          status?: Database["public"]["Enums"]["link_request_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "parent_link_requests_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       parent_links: {
         Row: {
@@ -524,9 +620,67 @@ export type Database = {
           },
         ]
       }
+      report_cards: {
+        Row: {
+          academic_year: number
+          file_name: string
+          file_path: string
+          id: string
+          learner_id: string
+          notes: string | null
+          school_id: string
+          term: number
+          uploaded_at: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          academic_year?: number
+          file_name: string
+          file_path: string
+          id?: string
+          learner_id: string
+          notes?: string | null
+          school_id: string
+          term: number
+          uploaded_at?: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          academic_year?: number
+          file_name?: string
+          file_path?: string
+          id?: string
+          learner_id?: string
+          notes?: string | null
+          school_id?: string
+          term?: number
+          uploaded_at?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "report_cards_learner_id_fkey"
+            columns: ["learner_id"]
+            isOneToOne: false
+            referencedRelation: "learners"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "report_cards_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       schools: {
         Row: {
           address: string | null
+          admission_requirements: string | null
+          application_close: string | null
+          application_contact: string | null
+          application_open: string | null
           city: string | null
           created_at: string
           description: string | null
@@ -536,12 +690,18 @@ export type Database = {
           emis_number: string
           established_year: number | null
           fees_annual: number | null
+          grade_from: number | null
+          grade_to: number | null
           id: string
           language_of_instruction: string[] | null
           learner_count: number | null
           logo_url: string | null
           motto: string | null
           name: string
+          performance_avg: number | null
+          performance_rank_district: number | null
+          performance_rank_national: number | null
+          performance_rank_province: number | null
           phase: Database["public"]["Enums"]["school_phase"]
           phone: string | null
           postal_code: string | null
@@ -553,6 +713,10 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          admission_requirements?: string | null
+          application_close?: string | null
+          application_contact?: string | null
+          application_open?: string | null
           city?: string | null
           created_at?: string
           description?: string | null
@@ -562,12 +726,18 @@ export type Database = {
           emis_number: string
           established_year?: number | null
           fees_annual?: number | null
+          grade_from?: number | null
+          grade_to?: number | null
           id?: string
           language_of_instruction?: string[] | null
           learner_count?: number | null
           logo_url?: string | null
           motto?: string | null
           name: string
+          performance_avg?: number | null
+          performance_rank_district?: number | null
+          performance_rank_national?: number | null
+          performance_rank_province?: number | null
           phase: Database["public"]["Enums"]["school_phase"]
           phone?: string | null
           postal_code?: string | null
@@ -579,6 +749,10 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          admission_requirements?: string | null
+          application_close?: string | null
+          application_contact?: string | null
+          application_open?: string | null
           city?: string | null
           created_at?: string
           description?: string | null
@@ -588,12 +762,18 @@ export type Database = {
           emis_number?: string
           established_year?: number | null
           fees_annual?: number | null
+          grade_from?: number | null
+          grade_to?: number | null
           id?: string
           language_of_instruction?: string[] | null
           learner_count?: number | null
           logo_url?: string | null
           motto?: string | null
           name?: string
+          performance_avg?: number | null
+          performance_rank_district?: number | null
+          performance_rank_national?: number | null
+          performance_rank_province?: number | null
           phase?: Database["public"]["Enums"]["school_phase"]
           phone?: string | null
           postal_code?: string | null
@@ -770,6 +950,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      approve_link_request: {
+        Args: { _request_id: string; _reviewer_id: string }
+        Returns: Json
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -791,6 +975,34 @@ export type Database = {
       }
       is_super_admin: { Args: { _user_id: string }; Returns: boolean }
       learner_school_id: { Args: { _learner_id: string }; Returns: string }
+      notify_class_parents: {
+        Args: {
+          _body: string
+          _category: string
+          _class_id: string
+          _link?: string
+          _title: string
+        }
+        Returns: undefined
+      }
+      notify_school_parents: {
+        Args: {
+          _body: string
+          _category: string
+          _link?: string
+          _school_id: string
+          _title: string
+        }
+        Returns: undefined
+      }
+      recalculate_school_performance: {
+        Args: { _school_id: string }
+        Returns: undefined
+      }
+      reject_link_request: {
+        Args: { _reason?: string; _request_id: string; _reviewer_id: string }
+        Returns: Json
+      }
       user_school_ids: { Args: { _user_id: string }; Returns: string[] }
     }
     Enums: {
@@ -807,6 +1019,7 @@ export type Database = {
         | "detention"
         | "suspension"
         | "incident"
+      link_request_status: "pending" | "approved" | "rejected"
       sa_province:
         | "Western Cape"
         | "Gauteng"
@@ -817,7 +1030,7 @@ export type Database = {
         | "Mpumalanga"
         | "Northern Cape"
         | "North West"
-      school_phase: "primary" | "secondary" | "combined"
+      school_phase: "primary" | "secondary" | "combined" | "ecd"
       school_type: "public" | "independent" | "private" | "special"
       subscription_tier: "free" | "premium"
       transfer_status: "pending" | "approved" | "rejected" | "completed"
@@ -963,6 +1176,7 @@ export const Constants = {
         "suspension",
         "incident",
       ],
+      link_request_status: ["pending", "approved", "rejected"],
       sa_province: [
         "Western Cape",
         "Gauteng",
@@ -974,7 +1188,7 @@ export const Constants = {
         "Northern Cape",
         "North West",
       ],
-      school_phase: ["primary", "secondary", "combined"],
+      school_phase: ["primary", "secondary", "combined", "ecd"],
       school_type: ["public", "independent", "private", "special"],
       subscription_tier: ["free", "premium"],
       transfer_status: ["pending", "approved", "rejected", "completed"],
