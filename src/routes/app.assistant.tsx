@@ -10,7 +10,7 @@ import { Loader2, Send, Sparkles } from "lucide-react";
 export const Route = createFileRoute("/app/assistant")({
   component: () => {
     const [msgs, setMsgs] = useState<{role:string;content:string}[]>([
-      { role: "assistant", content: "Hi! I'm your Funda assistant. Ask me anything about school admin, marks, or how to use the app." },
+      { role: "assistant", content: "Hi! I'm the PASA Assistant. Ask me anything about school admin, marks, or how to use the app." },
     ]);
     const [input, setInput] = useState("");
     const [loading, setLoading] = useState(false);
@@ -29,7 +29,7 @@ export const Route = createFileRoute("/app/assistant")({
 
     return (
       <div className="max-w-3xl">
-        <PageHeader title="AI Assistant" sub="Ask anything about your child's school journey." action={<Sparkles className="size-5 text-accent"/>}/>
+        <PageHeader title="PASA Assistant" sub="Ask anything about your child's school journey." action={<Sparkles className="size-5 text-accent"/>}/>
         <Card className="flex flex-col h-[calc(100vh-220px)]">
           <div className="flex-1 overflow-y-auto p-5 space-y-4">
             {msgs.map((m, i) => (
