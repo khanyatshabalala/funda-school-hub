@@ -18,6 +18,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as SuperadminAuthRouteImport } from './routes/superadmin.auth'
 import { Route as SchoolsSchoolIdRouteImport } from './routes/schools.$schoolId'
 import { Route as SchoolAuthRouteImport } from './routes/school.auth'
 import { Route as AppUpgradeRouteImport } from './routes/app.upgrade'
@@ -87,6 +88,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRoute,
+} as any)
+const SuperadminAuthRoute = SuperadminAuthRouteImport.update({
+  id: '/superadmin/auth',
+  path: '/superadmin/auth',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const SchoolsSchoolIdRoute = SchoolsSchoolIdRouteImport.update({
   id: '/$schoolId',
@@ -240,6 +246,7 @@ export interface FileRoutesByFullPath {
   '/app/upgrade': typeof AppUpgradeRoute
   '/school/auth': typeof SchoolAuthRoute
   '/schools/$schoolId': typeof SchoolsSchoolIdRoute
+  '/superadmin/auth': typeof SuperadminAuthRoute
   '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
   '/admin/schools/$schoolId': typeof AdminSchoolsSchoolIdRoute
@@ -273,6 +280,7 @@ export interface FileRoutesByTo {
   '/app/upgrade': typeof AppUpgradeRoute
   '/school/auth': typeof SchoolAuthRoute
   '/schools/$schoolId': typeof SchoolsSchoolIdRoute
+  '/superadmin/auth': typeof SuperadminAuthRoute
   '/admin': typeof AdminIndexRoute
   '/app': typeof AppIndexRoute
   '/admin/schools/$schoolId': typeof AdminSchoolsSchoolIdRoute
@@ -309,6 +317,7 @@ export interface FileRoutesById {
   '/app/upgrade': typeof AppUpgradeRoute
   '/school/auth': typeof SchoolAuthRoute
   '/schools/$schoolId': typeof SchoolsSchoolIdRoute
+  '/superadmin/auth': typeof SuperadminAuthRoute
   '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
   '/admin/schools/$schoolId': typeof AdminSchoolsSchoolIdRoute
@@ -346,6 +355,7 @@ export interface FileRouteTypes {
     | '/app/upgrade'
     | '/school/auth'
     | '/schools/$schoolId'
+    | '/superadmin/auth'
     | '/admin/'
     | '/app/'
     | '/admin/schools/$schoolId'
@@ -379,6 +389,7 @@ export interface FileRouteTypes {
     | '/app/upgrade'
     | '/school/auth'
     | '/schools/$schoolId'
+    | '/superadmin/auth'
     | '/admin'
     | '/app'
     | '/admin/schools/$schoolId'
@@ -414,6 +425,7 @@ export interface FileRouteTypes {
     | '/app/upgrade'
     | '/school/auth'
     | '/schools/$schoolId'
+    | '/superadmin/auth'
     | '/admin/'
     | '/app/'
     | '/admin/schools/$schoolId'
@@ -428,6 +440,7 @@ export interface RootRouteChildren {
   PricingRoute: typeof PricingRoute
   SchoolsRoute: typeof SchoolsRouteWithChildren
   SchoolAuthRoute: typeof SchoolAuthRoute
+  SuperadminAuthRoute: typeof SuperadminAuthRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -494,6 +507,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/superadmin/auth': {
+      id: '/superadmin/auth'
+      path: '/superadmin/auth'
+      fullPath: '/superadmin/auth'
+      preLoaderRoute: typeof SuperadminAuthRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/schools/$schoolId': {
       id: '/schools/$schoolId'
@@ -760,6 +780,7 @@ const rootRouteChildren: RootRouteChildren = {
   PricingRoute: PricingRoute,
   SchoolsRoute: SchoolsRouteWithChildren,
   SchoolAuthRoute: SchoolAuthRoute,
+  SuperadminAuthRoute: SuperadminAuthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

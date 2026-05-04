@@ -19,8 +19,8 @@ export function PublicHeader() {
             <Button asChild size="sm"><Link to="/app">Open dashboard</Link></Button>
           ) : (
             <>
-              <Button asChild variant="ghost" size="sm"><Link to="/school/auth">School sign in</Link></Button>
-              <Button asChild size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90"><Link to="/auth">Parent sign up</Link></Button>
+              <Button asChild variant="ghost" size="sm"><Link to="/school/auth">Teacher sign in</Link></Button>
+              <Button asChild size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90"><Link to="/auth">Parent sign in</Link></Button>
             </>
           )}
         </div>
