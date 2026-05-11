@@ -23,7 +23,18 @@ const PROVINCES = [
   "Mpumalanga", "Northern Cape", "North West", "Western Cape",
 ] as const;
 const PHASES = ["primary", "secondary", "combined", "ecd"] as const;
-const PHASE_LABELS: Record<string, string> = { primary: "Primary", secondary: "Secondary", combined: "Combined", ecd: "ECD" };
+const PHASE_LABELS: Record<string, string> = {
+  primary:   "Primary school (Grade R–7)",
+  secondary: "High school (Grade 8–12)",
+  combined:  "Combined (Grade R–12)",
+  ecd:       "ECD / Pre-school",
+};
+const PHASE_GRADE_HINT: Record<string, string> = {
+  primary:   "Grades R to 7",
+  secondary: "Grades 8 to 12",
+  combined:  "Grades R to 12",
+  ecd:       "Pre-Grade R",
+};
 const TYPES = ["public", "independent", "private", "special"] as const;
 
 const schema = z.object({
@@ -173,8 +184,13 @@ function SchoolsPage() {
                   <Label>Phase</Label>
                   <Select value={phase} onValueChange={setPhase}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>{PHASES.map(p => <SelectItem key={p} value={p}>{PHASE_LABELS[p]}</SelectItem>)}</SelectContent>
+                    <SelectContent>
+                      {PHASES.map(p => <SelectItem key={p} value={p}>{PHASE_LABELS[p]}</SelectItem>)}
+                    </SelectContent>
                   </Select>
+                  <p className="text-[10px] text-muted-foreground mt-1">
+                    {PHASE_GRADE_HINT[phase]}
+                  </p>
                 </div>
                 <div>
                   <Label>Type</Label>

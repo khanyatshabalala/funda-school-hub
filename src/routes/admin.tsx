@@ -18,17 +18,20 @@ const items = [
 ];
 
 function AdminLayout() {
-  const { user, loading, primaryRole, signOut, profile, displayName } = useAuth();
+  const { user, loading, primaryRole, roles, signOut, profile, displayName } = useAuth();
   const navigate = useNavigate();
   const path = useRouterState({ select: r => r.location.pathname });
 
-  useEffect(() => {
-    if (loading) return;
-    if (!user) navigate({ to: "/school/auth" });
-    else if (primaryRole !== "super_admin") navigate({ to: "/app" });
-  }, [user, loading, primaryRole, navigate]);
+  // Wait for: auth loading AND roles to be fetched (roles array populated)
+  const rolesLoaded = !loading && (roles.length > 0 || user === null);
 
-  if (loading || !user || primaryRole !== "super_admin") {
+  useEffect(() => {
+    if (!rolesLoaded) return;
+    if (!user) navigate({ to: "/superadmin/auth" });
+    else if (primaryRole !== "super_admin") navigate({ to: "/app" });
+  }, [user, rolesLoaded, primaryRole, navigate]);
+
+  if (!rolesLoaded || !user || primaryRole !== "super_admin") {
     return <div className="min-h-screen grid place-items-center text-muted-foreground text-sm">Loading…</div>;
   }
 

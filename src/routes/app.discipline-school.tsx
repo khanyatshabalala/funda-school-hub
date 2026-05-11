@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { StubPage } from "@/components/funda/dashboards/SimplePage";
+import { DisciplinePage } from "@/components/funda/dashboards/DisciplinePage";
+
 export const Route = createFileRoute("/app/discipline-school")({
-  component: () => <StubPage title="Discipline" sub="Log incidents and merits." />,
+  component: DisciplinePage,
 });

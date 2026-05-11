@@ -32,17 +32,17 @@ CREATE POLICY "School staff manage report cards"
   TO authenticated
   USING (
     public.has_school_role(
-      ARRAY['principal','school_admin','teacher']::public.app_role[],
+      auth.uid(),
       school_id,
-      auth.uid()
+      ARRAY['principal','school_admin','teacher']::public.app_role[]
     )
     OR public.is_super_admin(auth.uid())
   )
   WITH CHECK (
     public.has_school_role(
-      ARRAY['principal','school_admin','teacher']::public.app_role[],
+      auth.uid(),
       school_id,
-      auth.uid()
+      ARRAY['principal','school_admin','teacher']::public.app_role[]
     )
     OR public.is_super_admin(auth.uid())
   );
@@ -74,9 +74,9 @@ CREATE POLICY "School staff upload report cards"
   WITH CHECK (
     bucket_id = 'report-cards'
     AND public.has_school_role(
-      ARRAY['principal','school_admin','teacher']::public.app_role[],
+      auth.uid(),
       (storage.foldername(name))[1]::uuid,
-      auth.uid()
+      ARRAY['principal','school_admin','teacher']::public.app_role[]
     )
   );
 
@@ -88,9 +88,9 @@ CREATE POLICY "School staff delete report cards"
   USING (
     bucket_id = 'report-cards'
     AND public.has_school_role(
-      ARRAY['principal','school_admin','teacher']::public.app_role[],
+      auth.uid(),
       (storage.foldername(name))[1]::uuid,
-      auth.uid()
+      ARRAY['principal','school_admin','teacher']::public.app_role[]
     )
   );
 

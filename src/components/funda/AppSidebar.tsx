@@ -2,7 +2,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarHeader, SidebarFooter } from "@/components/ui/sidebar";
 import { FundaLogo } from "./Logo";
 import { useAuth } from "@/lib/auth-context";
-import { Home, Users, BookOpen, CalendarDays, Bell, Shield, ArrowLeftRight, GraduationCap, ClipboardList, FileText, MessageCircle, Crown, LogOut, ShieldCheck, Settings, UserCog } from "lucide-react";
+import { Home, Users, BookOpen, CalendarDays, Bell, Shield, ArrowLeftRight, ClipboardList, FileText, MessageCircle, Crown, LogOut, ShieldCheck, Settings, UserCog, GraduationCap, ClipboardCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const parentItems = [
@@ -20,7 +20,7 @@ const parentItems = [
 const schoolBaseItems = [
   { to: "/app", title: "Overview", icon: Home, exact: true },
   { to: "/app/learners", title: "Learners", icon: Users },
-  { to: "/app/classes", title: "Classes", icon: GraduationCap },
+  { to: "/app/classes", title: "Exam timetable", icon: ClipboardCheck },
   { to: "/app/marks-capture", title: "Report cards", icon: BookOpen },
   { to: "/app/attendance-capture", title: "Attendance", icon: ClipboardList },
   { to: "/app/discipline-school", title: "Discipline", icon: Shield },

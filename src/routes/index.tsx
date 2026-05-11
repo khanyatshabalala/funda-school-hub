@@ -59,9 +59,14 @@ function Landing() {
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg shadow-accent/20">
-                <Link to="/auth">Get started free <ArrowRight className="ml-2 size-4" /></Link>
+                <Link to="/auth">Parent sign up / sign in <ArrowRight className="ml-2 size-4" /></Link>
               </Button>
               <Button asChild size="lg" variant="outline" className="border-white/20 text-white bg-white/5 hover:bg-white/10 hover:text-white">
+                <Link to="/school/auth">Teacher / staff sign in</Link>
+              </Button>
+            </div>
+            <div className="mt-4">
+              <Button asChild size="sm" variant="ghost" className="text-white/50 hover:text-white/80 hover:bg-white/5 text-xs px-2">
                 <Link to="/schools">Explore schools</Link>
               </Button>
             </div>

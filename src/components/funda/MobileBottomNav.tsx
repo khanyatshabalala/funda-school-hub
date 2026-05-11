@@ -5,7 +5,7 @@ import {
   Home, Users, BookOpen, CalendarDays, Bell, Shield,
   ArrowLeftRight, GraduationCap, ClipboardList, FileText,
   MessageCircle, Crown, Settings, LogOut, MoreHorizontal,
-  ShieldCheck, X, UserCog,
+  ShieldCheck, X, UserCog, ClipboardCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -42,7 +42,7 @@ const schoolPrimary: NavItem[] = [
   { to: "/app/attendance-capture", title: "Attendance", icon: ClipboardList },
 ];
 const schoolMore: NavItem[] = [
-  { to: "/app/classes",            title: "Classes",    icon: GraduationCap },
+  { to: "/app/classes",            title: "Exams",      icon: ClipboardCheck },
   { to: "/app/discipline-school",  title: "Discipline", icon: Shield },
   { to: "/app/calendar",           title: "Calendar",   icon: CalendarDays },
   { to: "/app/assistant",          title: "Assistant",  icon: MessageCircle },
