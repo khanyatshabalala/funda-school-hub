@@ -9,13 +9,29 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { ArrowLeft, Loader2, Trophy } from "lucide-react";
+import { ArrowLeft, Loader2, Trophy, GraduationCap } from "lucide-react";
 import { friendlyDbError } from "@/lib/db-errors";
 
 export const Route = createFileRoute("/admin/schools/$schoolId")({
   component: SchoolEditPage,
 });
+
+const PHASE_LABELS: Record<string, string> = {
+  primary:   "Primary school",
+  secondary: "High school",
+  combined:  "Combined school",
+  ecd:       "ECD / Pre-school",
+};
+
+// Grade ranges per phase
+const PHASE_GRADES: Record<string, { min: number; max: number; label: string }> = {
+  primary:   { min: 0, max: 7,  label: "Grade R to Grade 7" },
+  secondary: { min: 8, max: 12, label: "Grade 8 to Grade 12" },
+  combined:  { min: 0, max: 12, label: "Grade R to Grade 12" },
+  ecd:       { min: 0, max: 0,  label: "Pre-Grade R" },
+};
 
 const admissionsSchema = z.object({
   grade_from: z.coerce.number().int().min(0).max(12).nullable(),
@@ -32,11 +48,32 @@ function SchoolEditPage() {
   const [school, setSchool] = useState<any>(null);
   const [saving, setSaving] = useState(false);
   const [recalculating, setRecalculating] = useState(false);
+  const [savingPhase, setSavingPhase] = useState(false);
+  const [phase, setPhase] = useState<string>("");
 
-  useEffect(() => {
+  const loadSchool = () =>
     supabase.from("schools").select("*").eq("id", schoolId).maybeSingle()
-      .then(({ data }) => setSchool(data));
-  }, [schoolId]);
+      .then(({ data }) => {
+        setSchool(data);
+        setPhase(data?.phase ?? "");
+      });
+
+  useEffect(() => { loadSchool(); }, [schoolId]);
+
+  const onSavePhase = async () => {
+    if (!phase) return;
+    setSavingPhase(true);
+    const gradeRange = PHASE_GRADES[phase];
+    const { error } = await (supabase as any).from("schools").update({
+      phase,
+      grade_from: gradeRange?.min ?? null,
+      grade_to:   gradeRange?.max ?? null,
+    }).eq("id", schoolId);
+    setSavingPhase(false);
+    if (error) return toast.error(friendlyDbError(error));
+    toast.success("School phase updated");
+    loadSchool();
+  };
 
   const onSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -64,9 +101,7 @@ function SchoolEditPage() {
 
     if (error) return toast.error(friendlyDbError(error));
     toast.success("School updated");
-    // Refresh
-    supabase.from("schools").select("*").eq("id", schoolId).maybeSingle()
-      .then(({ data }) => setSchool(data));
+    loadSchool();
   };
 
   const onRecalculate = async () => {
@@ -77,13 +112,14 @@ function SchoolEditPage() {
     setRecalculating(false);
     if (error) return toast.error(friendlyDbError(error));
     toast.success("Performance rankings updated");
-    supabase.from("schools").select("*").eq("id", schoolId).maybeSingle()
-      .then(({ data }) => setSchool(data));
+    loadSchool();
   };
 
   if (!school) return (
     <div className="text-sm text-muted-foreground py-10 text-center">Loading…</div>
   );
+
+  const phaseInfo = PHASE_GRADES[school.phase];
 
   return (
     <div className="max-w-2xl">
@@ -96,6 +132,52 @@ function SchoolEditPage() {
           <p className="text-sm text-muted-foreground">{school.district} · {school.province}</p>
         </div>
       </div>
+
+      {/* ── School type & phase ── */}
+      <Card className="p-5 mb-6">
+        <div className="flex items-center gap-2 mb-4">
+          <GraduationCap className="size-4 text-accent" />
+          <h2 className="font-semibold">School type & phase</h2>
+        </div>
+        <div className="flex items-center gap-3 mb-4 flex-wrap">
+          <Badge variant="secondary" className="capitalize">{school.school_type}</Badge>
+          <Badge className="bg-accent/15 text-accent border-0">
+            {PHASE_LABELS[school.phase] ?? school.phase}
+          </Badge>
+          {phaseInfo && (
+            <span className="text-sm text-muted-foreground">{phaseInfo.label}</span>
+          )}
+        </div>
+        <div className="space-y-3">
+          <div>
+            <Label>Change phase</Label>
+            <div className="flex gap-2 mt-1">
+              <Select value={phase} onValueChange={setPhase}>
+                <SelectTrigger className="flex-1">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="primary">Primary school (Grade R–7)</SelectItem>
+                  <SelectItem value="secondary">High school (Grade 8–12)</SelectItem>
+                  <SelectItem value="combined">Combined school (Grade R–12)</SelectItem>
+                  <SelectItem value="ecd">ECD / Pre-school</SelectItem>
+                </SelectContent>
+              </Select>
+              <Button
+                onClick={onSavePhase}
+                disabled={savingPhase || phase === school.phase}
+                variant="outline"
+              >
+                {savingPhase && <Loader2 className="size-3.5 animate-spin mr-1.5" />}
+                Save
+              </Button>
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-1">
+              Changing the phase automatically updates the grade range for this school.
+            </p>
+          </div>
+        </div>
+      </Card>
 
       {/* ── Performance summary ── */}
       <Card className="p-5 mb-6">
@@ -146,15 +228,15 @@ function SchoolEditPage() {
             <div>
               <Label htmlFor="gf">Grade from</Label>
               <Input id="gf" name="grade_from" type="number" min={0} max={12}
-                defaultValue={school.grade_from ?? ""}
-                placeholder="e.g. 8" />
+                defaultValue={school.grade_from ?? phaseInfo?.min ?? ""}
+                placeholder={`e.g. ${phaseInfo?.min ?? 0}`} />
               <p className="text-[10px] text-muted-foreground mt-1">0 = Grade R</p>
             </div>
             <div>
               <Label htmlFor="gt">Grade to</Label>
               <Input id="gt" name="grade_to" type="number" min={0} max={12}
-                defaultValue={school.grade_to ?? ""}
-                placeholder="e.g. 12" />
+                defaultValue={school.grade_to ?? phaseInfo?.max ?? ""}
+                placeholder={`e.g. ${phaseInfo?.max ?? 12}`} />
             </div>
           </div>
 
