@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
+import {
+  View, Text, ScrollView, StyleSheet,
+  ActivityIndicator, TouchableOpacity,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '@/lib/auth-context';
 import { supabase } from '@/lib/supabase';
 
@@ -12,6 +16,31 @@ type Notification = {
   read_at: string | null;
   created_at: string;
 };
+
+const CATEGORY_COLORS: Record<string, string> = {
+  calendar:   '#38bdf8',
+  marks:      '#22c55e',
+  attendance: '#f97316',
+  discipline: '#ef4444',
+  admissions: '#a855f7',
+  default:    '#64748b',
+};
+
+const CATEGORY_ICONS: Record<string, string> = {
+  calendar:   'calendar',
+  marks:      'document-text',
+  attendance: 'checkmark-circle',
+  discipline: 'shield',
+  admissions: 'school',
+  default:    'notifications',
+};
+
+function categoryColor(cat: string | null) {
+  return CATEGORY_COLORS[cat ?? ''] ?? CATEGORY_COLORS.default;
+}
+function categoryIcon(cat: string | null): any {
+  return CATEGORY_ICONS[cat ?? ''] ?? CATEGORY_ICONS.default;
+}
 
 export default function AlertsScreen() {
   const { user } = useAuth();
@@ -42,16 +71,33 @@ export default function AlertsScreen() {
     );
   };
 
+  const markAllRead = async () => {
+    if (!user) return;
+    await supabase
+      .from('notifications')
+      .update({ read_at: new Date().toISOString() })
+      .eq('user_id', user.id)
+      .is('read_at', null);
+    setNotifications((prev) =>
+      prev.map((n) => ({ ...n, read_at: n.read_at ?? new Date().toISOString() }))
+    );
+  };
+
   const unreadCount = notifications.filter((n) => !n.read_at).length;
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Notifications</Text>
+        <View>
+          <Text style={styles.title}>Notifications</Text>
+          {unreadCount > 0 && (
+            <Text style={styles.unreadSub}>{unreadCount} unread</Text>
+          )}
+        </View>
         {unreadCount > 0 && (
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>{unreadCount}</Text>
-          </View>
+          <TouchableOpacity style={styles.markAllBtn} onPress={markAllRead}>
+            <Text style={styles.markAllText}>Mark all read</Text>
+          </TouchableOpacity>
         )}
       </View>
 
@@ -60,7 +106,10 @@ export default function AlertsScreen() {
       ) : (
         <ScrollView contentContainerStyle={styles.list}>
           {notifications.length === 0 ? (
-            <Text style={styles.empty}>No notifications yet.</Text>
+            <View style={styles.emptyWrap}>
+              <Ionicons name="notifications-off-outline" size={40} color="#334155" />
+              <Text style={styles.empty}>No notifications yet.</Text>
+            </View>
           ) : (
             notifications.map((n) => (
               <TouchableOpacity
@@ -69,16 +118,28 @@ export default function AlertsScreen() {
                 onPress={() => !n.read_at && markRead(n.id)}
                 activeOpacity={0.7}
               >
-                {!n.read_at && <View style={styles.unreadDot} />}
-                <View style={styles.cardBody}>
-                  <Text style={styles.cardTitle}>{n.title}</Text>
-                  {n.body && <Text style={styles.cardBody2}>{n.body}</Text>}
+                {/* Category icon */}
+                <View style={[styles.iconWrap, { backgroundColor: categoryColor(n.category) + '22' }]}>
+                  <Ionicons
+                    name={categoryIcon(n.category)}
+                    size={18}
+                    color={categoryColor(n.category)}
+                  />
+                </View>
+
+                <View style={styles.cardContent}>
+                  <Text style={[styles.cardTitle, !n.read_at && styles.cardTitleUnread]}>
+                    {n.title}
+                  </Text>
+                  {n.body && <Text style={styles.cardBody}>{n.body}</Text>}
                   <Text style={styles.cardTime}>
                     {new Date(n.created_at).toLocaleDateString('en-ZA', {
                       day: 'numeric', month: 'short', year: 'numeric',
                     })}
                   </Text>
                 </View>
+
+                {!n.read_at && <View style={styles.unreadDot} />}
               </TouchableOpacity>
             ))
           )}
@@ -89,18 +150,22 @@ export default function AlertsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container:   { flex: 1, backgroundColor: '#0f172a' },
-  header:      { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 20, paddingBottom: 12 },
-  title:       { fontSize: 22, fontWeight: '800', color: '#f1f5f9' },
-  badge:       { backgroundColor: '#38bdf8', borderRadius: 10, paddingHorizontal: 7, paddingVertical: 2 },
-  badgeText:   { color: '#0f172a', fontSize: 12, fontWeight: '700' },
-  list:        { padding: 16, gap: 8 },
-  empty:       { color: '#475569', textAlign: 'center', marginTop: 40 },
-  card:        { backgroundColor: '#1e293b', borderRadius: 12, padding: 14, flexDirection: 'row', gap: 10 },
-  cardUnread:  { borderLeftWidth: 3, borderLeftColor: '#38bdf8' },
-  unreadDot:   { width: 8, height: 8, borderRadius: 4, backgroundColor: '#38bdf8', marginTop: 5 },
-  cardBody:    { flex: 1 },
-  cardTitle:   { color: '#f1f5f9', fontWeight: '600', fontSize: 14 },
-  cardBody2:   { color: '#94a3b8', fontSize: 13, marginTop: 3 },
-  cardTime:    { color: '#475569', fontSize: 11, marginTop: 6 },
+  container:       { flex: 1, backgroundColor: '#0f172a' },
+  header:          { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 20, paddingBottom: 12 },
+  title:           { fontSize: 22, fontWeight: '800', color: '#f1f5f9' },
+  unreadSub:       { fontSize: 12, color: '#38bdf8', marginTop: 2 },
+  markAllBtn:      { backgroundColor: '#1e293b', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 6 },
+  markAllText:     { color: '#94a3b8', fontSize: 12, fontWeight: '600' },
+  list:            { padding: 16, gap: 8, paddingBottom: 40 },
+  emptyWrap:       { alignItems: 'center', marginTop: 60, gap: 12 },
+  empty:           { color: '#475569', fontSize: 14 },
+  card:            { backgroundColor: '#1e293b', borderRadius: 12, padding: 14, flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
+  cardUnread:      { borderLeftWidth: 3, borderLeftColor: '#38bdf8' },
+  iconWrap:        { width: 36, height: 36, borderRadius: 10, alignItems: 'center', justifyContent: 'center', shrink: 0 } as any,
+  cardContent:     { flex: 1 },
+  cardTitle:       { color: '#94a3b8', fontWeight: '500', fontSize: 14 },
+  cardTitleUnread: { color: '#f1f5f9', fontWeight: '700' },
+  cardBody:        { color: '#64748b', fontSize: 13, marginTop: 3, lineHeight: 18 },
+  cardTime:        { color: '#475569', fontSize: 11, marginTop: 6 },
+  unreadDot:       { width: 8, height: 8, borderRadius: 4, backgroundColor: '#38bdf8', marginTop: 4 },
 });
