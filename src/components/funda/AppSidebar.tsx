@@ -23,6 +23,7 @@ const schoolBaseItems = [
   { to: "/app/classes", title: "Classes", icon: LayoutList },
   { to: "/app/exam-timetable", title: "Exam timetable", icon: ClipboardCheck },
   { to: "/app/attendance-capture", title: "Attendance", icon: ClipboardList },
+  { to: "/app/marks-capture", title: "Report cards", icon: BookOpen },
   { to: "/app/discipline-school", title: "Discipline", icon: Shield },
   { to: "/app/calendar", title: "Calendar", icon: CalendarDays },
   { to: "/app/assistant", title: "AI Assistant", icon: MessageCircle },
