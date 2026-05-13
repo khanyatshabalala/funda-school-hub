@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { StubPage } from "@/components/funda/dashboards/SimplePage";
+import { TransfersPage } from "@/components/funda/dashboards/TransfersPage";
+
 export const Route = createFileRoute("/app/transfers")({
-  component: () => <StubPage title="Transfers" sub="Process learner transfer requests." />,
+  component: TransfersPage,
 });

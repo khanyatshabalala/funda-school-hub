@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { StubPage } from "@/components/funda/dashboards/SimplePage";
+import { AuditLogPage } from "@/components/funda/dashboards/AuditLogPage";
+
 export const Route = createFileRoute("/app/audit")({
-  component: () => <StubPage title="Audit log" sub="Compliance trail of all actions." />,
+  component: AuditLogPage,
 });
