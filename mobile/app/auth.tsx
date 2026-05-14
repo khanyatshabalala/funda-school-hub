@@ -3,6 +3,7 @@ import {
   View, Text, TextInput, TouchableOpacity,
   StyleSheet, KeyboardAvoidingView, Platform, ActivityIndicator, Alert,
 } from 'react-native';
+import { BarefootLoader } from '@/lib/BarefootLoader';
 import { supabase } from '@/lib/supabase';
 
 export default function AuthScreen() {
@@ -25,8 +26,11 @@ export default function AuthScreen() {
     >
       <View style={styles.inner}>
         {/* Logo / wordmark */}
-        <Text style={styles.logo}>funda</Text>
-        <Text style={styles.tagline}>School management, simplified.</Text>
+        <View style={styles.logoWrap}>
+          <BarefootLoader size={80} theme="dark" />
+          <Text style={styles.logo}>barefoot labs</Text>
+          <Text style={styles.tagline}>School management, simplified.</Text>
+        </View>
 
         <View style={styles.form}>
           <Text style={styles.label}>Email</Text>
@@ -57,7 +61,7 @@ export default function AuthScreen() {
             disabled={loading}
           >
             {loading
-              ? <ActivityIndicator color="#fff" />
+              ? <BarefootLoader size={22} theme="light" />
               : <Text style={styles.buttonText}>Sign in</Text>}
           </TouchableOpacity>
         </View>
@@ -77,16 +81,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 28,
   },
   logo: {
-    fontSize: 40,
+    fontSize: 28,
     fontWeight: '800',
     color: '#38bdf8',
-    letterSpacing: -1,
-    marginBottom: 4,
+    letterSpacing: -0.5,
+    marginTop: 8,
+  },
+  logoWrap: {
+    alignItems: 'center',
+    marginBottom: 40,
   },
   tagline: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#94a3b8',
-    marginBottom: 40,
+    marginTop: 4,
   },
   form: {
     gap: 4,
