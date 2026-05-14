@@ -1,16 +1,9 @@
 /**
  * BarefootLoader — React Native (Reanimated + react-native-svg)
  *
- * Sequence (slow, deliberate):
- * 1. Foot pad draws ~270° open arc — 1200ms
- * 2. Toe 1 spins 360° — 800ms
- * 3. Toe 2 (accent) spins 360° — 800ms
- * 4. Toe 3 spins 360° — 800ms
- * 5. Toe 4 (pinky) spins 360° — 800ms
- * 6. Hold — 600ms
- * 7. Foot pad unspins (rewinds) — 1200ms
- * 8. All toes fade out — 400ms
- * 9. Loop
+ * Each element draws itself via strokeDashoffset (full length → 0).
+ * Sequence: pad draws ~270° → toe1 draws 360° → toe2 → toe3 → toe4
+ * → hold → pad undraws → all fade out → loop
  */
 
 import { useEffect } from 'react';
@@ -40,7 +33,7 @@ const COLORS = {
   light: { primary: '#0f172a', accent: '#38bdf8' },
 };
 
-const PAD_DRAW  = 120;   // ~270° of the open arc
+const PAD_DRAW  = 120;
 const TOE_C     = 28.3;
 const PINKY_C   = 22.0;
 
@@ -64,11 +57,9 @@ const ease = Easing.bezier(0.4, 0, 0.2, 1);
 export function BarefootLoader({ size = 120, theme = 'dark' }: BarefootLoaderProps) {
   const c = COLORS[theme];
 
-  // Pad
   const padOffset  = useSharedValue(PAD_DRAW);
   const padOpacity = useSharedValue(0);
 
-  // Toes
   const t1Offset = useSharedValue(TOE_C);   const t1Opacity = useSharedValue(0);
   const t2Offset = useSharedValue(TOE_C);   const t2Opacity = useSharedValue(0);
   const t3Offset = useSharedValue(TOE_C);   const t3Opacity = useSharedValue(0);
@@ -77,19 +68,19 @@ export function BarefootLoader({ size = 120, theme = 'dark' }: BarefootLoaderPro
   useEffect(() => {
     // ── Foot pad ──
     padOpacity.value = withRepeat(withSequence(
-      withTiming(1, { duration: 50 }),
-      withTiming(1, { duration: S_FADE - 50 }),
-      withTiming(0, { duration: T_FADE }),
+      withTiming(1,  { duration: 20 }),                          // snap visible
+      withTiming(1,  { duration: S_FADE - 20 }),                 // stay visible
+      withTiming(0,  { duration: T_FADE }),                      // fade out
     ), -1, false);
 
     padOffset.value = withRepeat(withSequence(
-      withTiming(0,        { duration: T_PAD_IN,  easing: ease }),  // spin in
-      withTiming(0,        { duration: S_PAD_OUT - T_PAD_IN }),     // hold while toes draw + hold
-      withTiming(PAD_DRAW, { duration: T_PAD_OUT, easing: ease }),  // unspin
-      withTiming(PAD_DRAW, { duration: T_FADE }),                   // stay hidden during fade
+      withTiming(0,        { duration: T_PAD_IN,  easing: ease }),  // draw in
+      withTiming(0,        { duration: S_PAD_OUT - T_PAD_IN }),     // hold
+      withTiming(PAD_DRAW, { duration: T_PAD_OUT, easing: ease }),  // undraw
+      withTiming(PAD_DRAW, { duration: T_FADE }),                   // reset
     ), -1, false);
 
-    // ── Toe helper ──
+    // ── Toe helper: draws from full length → 0, then holds, then fades ──
     const animToe = (
       offset: SharedValue<number>,
       opacity: SharedValue<number>,
@@ -97,22 +88,23 @@ export function BarefootLoader({ size = 120, theme = 'dark' }: BarefootLoaderPro
       len: number,
       maxOp: number,
     ) => {
-      const holdDur = S_PAD_OUT - (startMs + T_TOE);  // hold after spinning
-      const beforeFade = S_FADE - S_PAD_OUT;
+      const holdAfterDraw = S_PAD_OUT - (startMs + T_TOE);
 
+      // opacity: hidden → snap visible when drawing starts → hold → fade
       opacity.value = withRepeat(withSequence(
-        withDelay(startMs, withTiming(maxOp, { duration: 40 })),
-        withTiming(maxOp, { duration: T_TOE - 40 + holdDur + T_PAD_OUT }),
+        withDelay(startMs, withTiming(maxOp, { duration: 20 })),
+        withTiming(maxOp, { duration: T_TOE - 20 + holdAfterDraw + T_PAD_OUT }),
         withTiming(0,     { duration: T_FADE }),
-        withTiming(0,     { duration: startMs }),  // gap back to cycle start
+        withTiming(0,     { duration: startMs }),  // wait for next cycle
       ), -1, false);
 
+      // offset: full → 0 (draw), hold at 0, reset
       offset.value = withRepeat(withSequence(
-        withDelay(startMs, withTiming(0, { duration: T_TOE, easing: ease })),
-        withTiming(0,   { duration: holdDur + T_PAD_OUT }),
+        withDelay(startMs, withTiming(0,   { duration: T_TOE, easing: ease })),
+        withTiming(0,   { duration: holdAfterDraw + T_PAD_OUT }),
         withTiming(0,   { duration: T_FADE }),
-        withTiming(len, { duration: 0 }),
-        withTiming(len, { duration: startMs }),
+        withTiming(len, { duration: 0 }),           // instant reset
+        withTiming(len, { duration: startMs }),     // wait
       ), -1, false);
     };
 
