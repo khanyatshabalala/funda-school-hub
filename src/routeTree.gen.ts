@@ -28,11 +28,11 @@ import { Route as AppSchoolsRouteImport } from './routes/app.schools'
 import { Route as AppProfileRouteImport } from './routes/app.profile'
 import { Route as AppMarksCaptureRouteImport } from './routes/app.marks-capture'
 import { Route as AppMarksRouteImport } from './routes/app.marks'
-import { Route as AppLearnersRouteImport } from './routes/app.learners'
 import { Route as AppLinkRequestsRouteImport } from './routes/app.link-requests'
+import { Route as AppLearnersRouteImport } from './routes/app.learners'
+import { Route as AppExamTimetableRouteImport } from './routes/app.exam-timetable'
 import { Route as AppDisciplineSchoolRouteImport } from './routes/app.discipline-school'
 import { Route as AppDisciplineRouteImport } from './routes/app.discipline'
-import { Route as AppExamTimetableRouteImport } from './routes/app.exam-timetable'
 import { Route as AppClassesRouteImport } from './routes/app.classes'
 import { Route as AppChildrenRouteImport } from './routes/app.children'
 import { Route as AppCalendarRouteImport } from './routes/app.calendar'
@@ -141,14 +141,19 @@ const AppMarksRoute = AppMarksRouteImport.update({
   path: '/marks',
   getParentRoute: () => AppRoute,
 } as any)
+const AppLinkRequestsRoute = AppLinkRequestsRouteImport.update({
+  id: '/link-requests',
+  path: '/link-requests',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppLearnersRoute = AppLearnersRouteImport.update({
   id: '/learners',
   path: '/learners',
   getParentRoute: () => AppRoute,
 } as any)
-const AppLinkRequestsRoute = AppLinkRequestsRouteImport.update({
-  id: '/link-requests',
-  path: '/link-requests',
+const AppExamTimetableRoute = AppExamTimetableRouteImport.update({
+  id: '/exam-timetable',
+  path: '/exam-timetable',
   getParentRoute: () => AppRoute,
 } as any)
 const AppDisciplineSchoolRoute = AppDisciplineSchoolRouteImport.update({
@@ -164,11 +169,6 @@ const AppDisciplineRoute = AppDisciplineRouteImport.update({
 const AppClassesRoute = AppClassesRouteImport.update({
   id: '/classes',
   path: '/classes',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppExamTimetableRoute = AppExamTimetableRouteImport.update({
-  id: '/exam-timetable',
-  path: '/exam-timetable',
   getParentRoute: () => AppRoute,
 } as any)
 const AppChildrenRoute = AppChildrenRouteImport.update({
@@ -246,9 +246,9 @@ export interface FileRoutesByFullPath {
   '/app/calendar': typeof AppCalendarRoute
   '/app/children': typeof AppChildrenRoute
   '/app/classes': typeof AppClassesRoute
-  '/app/exam-timetable': typeof AppExamTimetableRoute
   '/app/discipline': typeof AppDisciplineRoute
   '/app/discipline-school': typeof AppDisciplineSchoolRoute
+  '/app/exam-timetable': typeof AppExamTimetableRoute
   '/app/learners': typeof AppLearnersRoute
   '/app/link-requests': typeof AppLinkRequestsRoute
   '/app/marks': typeof AppMarksRoute
@@ -282,9 +282,9 @@ export interface FileRoutesByTo {
   '/app/calendar': typeof AppCalendarRoute
   '/app/children': typeof AppChildrenRoute
   '/app/classes': typeof AppClassesRoute
-  '/app/exam-timetable': typeof AppExamTimetableRoute
   '/app/discipline': typeof AppDisciplineRoute
   '/app/discipline-school': typeof AppDisciplineSchoolRoute
+  '/app/exam-timetable': typeof AppExamTimetableRoute
   '/app/learners': typeof AppLearnersRoute
   '/app/link-requests': typeof AppLinkRequestsRoute
   '/app/marks': typeof AppMarksRoute
@@ -321,9 +321,9 @@ export interface FileRoutesById {
   '/app/calendar': typeof AppCalendarRoute
   '/app/children': typeof AppChildrenRoute
   '/app/classes': typeof AppClassesRoute
-  '/app/exam-timetable': typeof AppExamTimetableRoute
   '/app/discipline': typeof AppDisciplineRoute
   '/app/discipline-school': typeof AppDisciplineSchoolRoute
+  '/app/exam-timetable': typeof AppExamTimetableRoute
   '/app/learners': typeof AppLearnersRoute
   '/app/link-requests': typeof AppLinkRequestsRoute
   '/app/marks': typeof AppMarksRoute
@@ -361,9 +361,9 @@ export interface FileRouteTypes {
     | '/app/calendar'
     | '/app/children'
     | '/app/classes'
-    | '/app/exam-timetable'
     | '/app/discipline'
     | '/app/discipline-school'
+    | '/app/exam-timetable'
     | '/app/learners'
     | '/app/link-requests'
     | '/app/marks'
@@ -397,9 +397,9 @@ export interface FileRouteTypes {
     | '/app/calendar'
     | '/app/children'
     | '/app/classes'
-    | '/app/exam-timetable'
     | '/app/discipline'
     | '/app/discipline-school'
+    | '/app/exam-timetable'
     | '/app/learners'
     | '/app/link-requests'
     | '/app/marks'
@@ -435,9 +435,9 @@ export interface FileRouteTypes {
     | '/app/calendar'
     | '/app/children'
     | '/app/classes'
-    | '/app/exam-timetable'
     | '/app/discipline'
     | '/app/discipline-school'
+    | '/app/exam-timetable'
     | '/app/learners'
     | '/app/link-requests'
     | '/app/marks'
@@ -602,6 +602,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppMarksRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/link-requests': {
+      id: '/app/link-requests'
+      path: '/link-requests'
+      fullPath: '/app/link-requests'
+      preLoaderRoute: typeof AppLinkRequestsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/learners': {
       id: '/app/learners'
       path: '/learners'
@@ -609,11 +616,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppLearnersRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/link-requests': {
-      id: '/app/link-requests'
-      path: '/link-requests'
-      fullPath: '/app/link-requests'
-      preLoaderRoute: typeof AppLinkRequestsRouteImport
+    '/app/exam-timetable': {
+      id: '/app/exam-timetable'
+      path: '/exam-timetable'
+      fullPath: '/app/exam-timetable'
+      preLoaderRoute: typeof AppExamTimetableRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/discipline-school': {
@@ -635,13 +642,6 @@ declare module '@tanstack/react-router' {
       path: '/classes'
       fullPath: '/app/classes'
       preLoaderRoute: typeof AppClassesRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/exam-timetable': {
-      id: '/app/exam-timetable'
-      path: '/exam-timetable'
-      fullPath: '/app/exam-timetable'
-      preLoaderRoute: typeof AppExamTimetableRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/children': {
@@ -761,9 +761,9 @@ interface AppRouteChildren {
   AppCalendarRoute: typeof AppCalendarRoute
   AppChildrenRoute: typeof AppChildrenRoute
   AppClassesRoute: typeof AppClassesRoute
-  AppExamTimetableRoute: typeof AppExamTimetableRoute
   AppDisciplineRoute: typeof AppDisciplineRoute
   AppDisciplineSchoolRoute: typeof AppDisciplineSchoolRoute
+  AppExamTimetableRoute: typeof AppExamTimetableRoute
   AppLearnersRoute: typeof AppLearnersRoute
   AppLinkRequestsRoute: typeof AppLinkRequestsRoute
   AppMarksRoute: typeof AppMarksRoute
@@ -785,9 +785,9 @@ const AppRouteChildren: AppRouteChildren = {
   AppCalendarRoute: AppCalendarRoute,
   AppChildrenRoute: AppChildrenRoute,
   AppClassesRoute: AppClassesRoute,
-  AppExamTimetableRoute: AppExamTimetableRoute,
   AppDisciplineRoute: AppDisciplineRoute,
   AppDisciplineSchoolRoute: AppDisciplineSchoolRoute,
+  AppExamTimetableRoute: AppExamTimetableRoute,
   AppLearnersRoute: AppLearnersRoute,
   AppLinkRequestsRoute: AppLinkRequestsRoute,
   AppMarksRoute: AppMarksRoute,

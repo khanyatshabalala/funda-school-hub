@@ -8,7 +8,7 @@ export const Route = createFileRoute("/")({
   component: Landing,
   head: () => ({
     meta: [
-      { title: "Funda — School Management for South Africa" },
+      { title: "PASA — School Management for South Africa" },
       { name: "description", content: "The home–school bridge for South African families. Marks, attendance, discipline, school transfers — all in one app." },
     ],
   }),
@@ -114,7 +114,19 @@ function Landing() {
       </section>
 
       <footer className="border-t border-border/60 py-8 text-center text-sm text-muted-foreground">
-        © {new Date().getFullYear()} Funda. Made for South African schools.
+        <div className="flex items-center justify-center gap-2 mb-1.5">
+          <svg width="18" height="18" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="32" cy="40" rx="14" ry="16" fill="currentColor" opacity="0.5"/>
+            <circle cx="20" cy="22" r="5" fill="currentColor" opacity="0.4"/>
+            <circle cx="29" cy="18" r="5" fill="#38bdf8" opacity="0.8"/>
+            <circle cx="38" cy="20" r="5" fill="currentColor" opacity="0.4"/>
+            <circle cx="46" cy="26" r="4" fill="currentColor" opacity="0.25"/>
+          </svg>
+          <a href="https://barefootlabs.io" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors font-medium">
+            Barefoot Labs
+          </a>
+        </div>
+        © {new Date().getFullYear()} PASA · Made for South African schools
       </footer>
     </div>
   );

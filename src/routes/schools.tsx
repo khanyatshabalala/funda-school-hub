@@ -12,7 +12,7 @@ export const Route = createFileRoute("/schools")({
   component: SchoolsPage,
   head: () => ({
     meta: [
-      { title: "Find a school — Funda" },
+      { title: "Find a school — PASA" },
       { name: "description", content: "Search South African schools by district, phase, type and fees. EMIS-verified school profiles." },
     ],
   }),

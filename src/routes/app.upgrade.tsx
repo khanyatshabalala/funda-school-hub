@@ -25,7 +25,7 @@ export const Route = createFileRoute("/app/upgrade")({
           </Card>
         ) : (
           <>
-            <PageHeader title="Go Premium" sub="Unlock the full Funda experience." />
+            <PageHeader title="Go Premium" sub="Unlock the full PASA experience." />
             <Card className="p-8 bg-gradient-to-br from-primary to-[oklch(0.25_0.08_240)] text-primary-foreground border-0">
               <div className="flex items-center gap-3 mb-2"><Crown className="size-6 text-accent"/><div className="text-2xl font-bold">PASA Premium</div></div>
               <div className="flex items-baseline gap-1 mb-6"><span className="text-4xl font-bold">R19.99</span><span className="text-primary-foreground/70">/month</span></div>

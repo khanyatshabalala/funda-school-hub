@@ -6,7 +6,7 @@ import { Check } from "lucide-react";
 
 export const Route = createFileRoute("/pricing")({
   component: Pricing,
-  head: () => ({ meta: [{ title: "Pricing — Funda" }, { name: "description", content: "Free for parents. Premium R19.99/month adds unlimited children, instant alerts and downloadable reports." }]}),
+  head: () => ({ meta: [{ title: "Pricing — PASA" }, { name: "description", content: "Free for parents. Premium R19.99/month adds unlimited children, instant alerts and downloadable reports." }]}),
 });
 
 function Tier({ name, price, items, cta, highlight }: any) {
