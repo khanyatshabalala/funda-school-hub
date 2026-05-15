@@ -12,7 +12,6 @@ import { FundaLogo } from "@/components/funda/Logo";
 import { BarefootLoader } from "@/components/funda/BarefootLoader";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
-
 import { friendlyAuthError } from "@/lib/auth-errors";
 
 export const Route = createFileRoute("/auth")({
@@ -24,8 +23,13 @@ const signInSchema = z.object({
   email: z.string().trim().email().max(255),
   password: z.string().min(6).max(72),
 });
-const signUpSchema = signInSchema.extend({
-  full_name: z.string().trim().min(2).max(100),
+
+const signUpSchema = z.object({
+  first_name: z.string().trim().min(1, "Enter your first name").max(50),
+  last_name:  z.string().trim().min(1, "Enter your last name").max(50),
+  email:      z.string().trim().email().max(255),
+  password:   z.string().min(6, "Password must be at least 6 characters").max(72),
+  location:   z.string().trim().max(150).optional(),
 });
 
 const STAFF_ROLES = ["super_admin", "school_admin", "principal", "teacher"];
@@ -79,24 +83,41 @@ function AuthPage() {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
     const parsed = signUpSchema.safeParse({
-      email: fd.get("email"),
-      password: fd.get("password"),
-      full_name: fd.get("full_name"),
+      first_name: fd.get("first_name"),
+      last_name:  fd.get("last_name"),
+      email:      fd.get("email"),
+      password:   fd.get("password"),
+      location:   fd.get("location") || undefined,
     });
     if (!parsed.success) return toast.error(parsed.error.issues[0].message);
 
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
-      email: parsed.data.email,
+    const fullName = `${parsed.data.first_name} ${parsed.data.last_name}`.trim();
+    const { data, error } = await supabase.auth.signUp({
+      email:    parsed.data.email,
       password: parsed.data.password,
       options: {
         emailRedirectTo: `${window.location.origin}/app`,
-        data: { full_name: parsed.data.full_name },
+        data: {
+          full_name:  fullName,
+          first_name: parsed.data.first_name,
+          last_name:  parsed.data.last_name,
+        },
       },
     });
+    if (error) { setLoading(false); return toast.error(friendlyAuthError(error)); }
+
+    // Save location to profile if provided
+    if (data.user && parsed.data.location) {
+      await supabase.from("profiles").update({
+        first_name: parsed.data.first_name,
+        last_name:  parsed.data.last_name,
+        city:       parsed.data.location,
+      } as any).eq("id", data.user.id);
+    }
+
     setLoading(false);
-    if (error) return toast.error(friendlyAuthError(error));
-    toast.success("Check your email to verify your account.");
+    toast.success("Account created! Check your email to verify.");
   };
 
   const onGoogle = async () => {
@@ -167,9 +188,15 @@ function AuthPage() {
 
             <TabsContent value="signup">
               <form onSubmit={onSignUp} className="space-y-4 mt-6">
-                <div>
-                  <Label htmlFor="su-name">Full name</Label>
-                  <Input id="su-name" name="full_name" required />
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label htmlFor="su-fn">First name</Label>
+                    <Input id="su-fn" name="first_name" required autoComplete="given-name" placeholder="Sipho" />
+                  </div>
+                  <div>
+                    <Label htmlFor="su-ln">Last name</Label>
+                    <Input id="su-ln" name="last_name" required autoComplete="family-name" placeholder="Dlamini" />
+                  </div>
                 </div>
                 <div>
                   <Label htmlFor="su-email">Email</Label>
@@ -178,6 +205,19 @@ function AuthPage() {
                 <div>
                   <Label htmlFor="su-pw">Password</Label>
                   <Input id="su-pw" name="password" type="password" required autoComplete="new-password" minLength={6} />
+                </div>
+                {/* Location — optional */}
+                <div>
+                  <Label htmlFor="su-location">
+                    Location <span className="text-muted-foreground/60 font-normal text-xs">(optional)</span>
+                  </Label>
+                  <Input
+                    id="su-location"
+                    name="location"
+                    placeholder="e.g. Soweto, Gauteng"
+                    autoComplete="address-level2"
+                    maxLength={150}
+                  />
                 </div>
                 <Button disabled={loading} className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
                   {loading ? <Loader2 className="size-4 animate-spin" /> : "Create account"}

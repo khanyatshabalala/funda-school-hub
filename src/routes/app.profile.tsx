@@ -22,8 +22,9 @@ export const Route = createFileRoute("/app/profile")({
 });
 
 const profileSchema = z.object({
-  full_name: z.string().trim().min(2, "Name must be at least 2 characters").max(100),
-  phone: z.string().trim().max(20).optional().or(z.literal("")),
+  first_name: z.string().trim().min(1, "Enter your first name").max(50),
+  last_name:  z.string().trim().min(1, "Enter your last name").max(50),
+  location:   z.string().trim().max(150).optional().or(z.literal("")),
 });
 
 const passwordSchema = z
@@ -55,15 +56,20 @@ function ProfilePage() {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
     const parsed = profileSchema.safeParse({
-      full_name: fd.get("full_name"),
-      phone: fd.get("phone") || "",
+      first_name: fd.get("first_name"),
+      last_name:  fd.get("last_name"),
+      location:   fd.get("location") || "",
     });
     if (!parsed.success) return toast.error(parsed.error.issues[0].message);
 
     setSavingProfile(true);
+    const fullName = `${parsed.data.first_name} ${parsed.data.last_name}`.trim();
     const { error } = await supabase
       .from("profiles")
-      .update({ full_name: parsed.data.full_name, phone: parsed.data.phone || null })
+      .update({
+        full_name:  fullName,
+        city:       parsed.data.location || null,
+      } as any)
       .eq("id", user!.id);
     setSavingProfile(false);
 
@@ -129,26 +135,37 @@ function ProfilePage() {
 
         {editingProfile ? (
           <form onSubmit={onSaveProfile} className="space-y-4">
-            <div>
-              <Label htmlFor="full_name">Full name</Label>
-              <Input
-                id="full_name"
-                name="full_name"
-                defaultValue={profile?.full_name ?? ""}
-                required
-                autoFocus
-              />
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label htmlFor="first_name">First name</Label>
+                <Input
+                  id="first_name"
+                  name="first_name"
+                  defaultValue={(profile as any)?.first_name ?? profile?.full_name?.split(" ")[0] ?? ""}
+                  required
+                  autoFocus
+                />
+              </div>
+              <div>
+                <Label htmlFor="last_name">Last name</Label>
+                <Input
+                  id="last_name"
+                  name="last_name"
+                  defaultValue={(profile as any)?.last_name ?? profile?.full_name?.split(" ").slice(1).join(" ") ?? ""}
+                  required
+                />
+              </div>
             </div>
             <div>
-              <Label htmlFor="phone">
-                Phone number <span className="text-muted-foreground text-xs">(optional)</span>
+              <Label htmlFor="location">
+                Location <span className="text-muted-foreground text-xs">(optional)</span>
               </Label>
               <Input
-                id="phone"
-                name="phone"
-                type="tel"
-                defaultValue={profile?.phone ?? ""}
-                placeholder="+27 82 000 0000"
+                id="location"
+                name="location"
+                defaultValue={(profile as any)?.city ?? ""}
+                placeholder="e.g. Soweto, Gauteng"
+                maxLength={150}
               />
             </div>
             <div className="flex gap-2 pt-1">
@@ -175,7 +192,7 @@ function ProfilePage() {
             <Separator />
             <Row label="Email" value={user?.email ?? "—"} />
             <Separator />
-            <Row label="Phone" value={profile?.phone ?? "—"} />
+            <Row label="Location" value={(profile as any)?.city ?? "—"} />
             <Separator />
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">Role</span>
