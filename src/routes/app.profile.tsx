@@ -11,9 +11,10 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Loader2, Eye, EyeOff, Pencil, X } from "lucide-react";
+import { Loader2, Eye, EyeOff, Pencil, X, Bell, BellOff } from "lucide-react";
 import { friendlyDbError } from "@/lib/db-errors";
 import { friendlyAuthError } from "@/lib/auth-errors";
+import { usePushNotifications } from "@/hooks/use-push-notifications";
 
 export const Route = createFileRoute("/app/profile")({
   component: ProfilePage,
@@ -38,6 +39,7 @@ const passwordSchema = z
 
 function ProfilePage() {
   const { user, profile, primaryRole, refresh } = useAuth();
+  const { state: pushState, subscribe: subscribePush, unsubscribe: unsubscribePush } = usePushNotifications();
 
   const [editingProfile, setEditingProfile] = useState(false);
   const [editingPassword, setEditingPassword] = useState(false);
@@ -274,6 +276,55 @@ function ProfilePage() {
           </form>
         )}
       </Card>
+
+      {/* ── Push notifications card ── */}
+      {pushState !== 'unsupported' && (
+        <Card className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="font-semibold">Push notifications</h2>
+              <p className="text-sm text-muted-foreground mt-0.5">
+                {pushState === 'subscribed'
+                  ? 'You will receive alerts for marks, attendance and discipline.'
+                  : pushState === 'denied'
+                  ? 'Notifications are blocked. Enable them in your browser settings.'
+                  : 'Get instant alerts when your school uploads new information.'}
+              </p>
+            </div>
+            {pushState === 'subscribed' ? (
+              <Button
+                size="sm"
+                variant="outline"
+                className="shrink-0 gap-1.5 text-muted-foreground"
+                onClick={async () => {
+                  await unsubscribePush();
+                  toast.success('Push notifications disabled');
+                }}
+              >
+                <BellOff className="size-3.5" /> Turn off
+              </Button>
+            ) : (
+              <Button
+                size="sm"
+                className="shrink-0 gap-1.5 bg-accent text-accent-foreground hover:bg-accent/90"
+                disabled={pushState === 'denied' || pushState === 'loading'}
+                onClick={async () => {
+                  const ok = await subscribePush();
+                  if (ok) toast.success('Push notifications enabled');
+                  else if (Notification.permission === 'denied') {
+                    toast.error('Notifications blocked — enable them in browser settings');
+                  }
+                }}
+              >
+                {pushState === 'loading'
+                  ? <Loader2 className="size-3.5 animate-spin" />
+                  : <Bell className="size-3.5" />}
+                {pushState === 'denied' ? 'Blocked' : 'Enable'}
+              </Button>
+            )}
+          </div>
+        </Card>
+      )}
     </div>
   );
 }

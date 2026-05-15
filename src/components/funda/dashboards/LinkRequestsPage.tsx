@@ -94,10 +94,10 @@ export function LinkRequestsPage() {
   const onRejectConfirm = async () => {
     if (!rejectTarget) return;
     setRejecting(true);
-    const { data, error } = await supabase.rpc("reject_link_request", {
+    const { data, error } = await (supabase as any).rpc("reject_link_request", {
       _request_id:  rejectTarget.id,
       _reviewer_id: user!.id,
-      _reason:      rejectReason.trim() || null,
+      _reason:      rejectReason.trim() || undefined,
     });
     setRejecting(false);
     if (error) return toast.error(error.message);

@@ -47,7 +47,7 @@ function AdmissionsPage() {
     const changes = editing[school.id];
     if (!changes) return;
     setSaving(school.id);
-    const { error } = await supabase.from("schools").update(changes).eq("id", school.id);
+    const { error } = await (supabase as any).from("schools").update(changes).eq("id", school.id);
     setSaving(null);
     if (error) return toast.error(friendlyDbError(error));
     toast.success(`${school.name} updated. Parents of Grade ${(changes.grade_from ?? school.grade_from ?? 1) - 1} learners will be notified.`);
