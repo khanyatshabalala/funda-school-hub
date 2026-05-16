@@ -70,7 +70,7 @@ export default function AttendanceScreen() {
       .select('learner_id, learners(first_name, last_name, grade_id)')
       .eq('parent_user_id', user.id)
       .then(({ data }) => {
-        const links = (data ?? []) as ChildLink[];
+        const links = (data ?? []) as unknown as ChildLink[];
         setChildren(links);
         if (links.length > 0) setSelectedChild(links[0].learner_id);
         else setLoading(false);

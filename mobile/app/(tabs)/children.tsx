@@ -59,7 +59,7 @@ export default function ChildrenScreen() {
         .select("id, first_name, last_name, learner_number, status, rejection_reason, created_at, schools(name)")
         .eq("parent_user_id", user.id).order("created_at", { ascending: false }),
     ]);
-    setChildren((links ?? []) as ChildLink[]);
+    setChildren((links ?? []) as unknown as ChildLink[]);
     setRequests((reqs ?? []) as LinkRequest[]);
     setLoading(false);
   };

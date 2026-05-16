@@ -82,7 +82,7 @@ export default function DisciplineScreen() {
         .in('learner_id', ids)
         .order('date', { ascending: false })
         .limit(50);
-      setRecords((rData ?? []) as DisciplineRow[]);
+      setRecords((rData ?? []) as unknown as DisciplineRow[]);
     }
     setLoading(false);
   };
