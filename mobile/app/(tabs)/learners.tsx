@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, ActivityIndicator, TextInput } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, ActivityIndicator, TextInput, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '@/lib/auth-context';
 import { supabase } from '@/lib/supabase';
@@ -16,6 +17,7 @@ type Learner = {
 
 export default function LearnersScreen() {
   const { primarySchoolId } = useAuth();
+  const router = useRouter();
   const [learners, setLearners] = useState<Learner[]>([]);
   const [search, setSearch]     = useState('');
   const [loading, setLoading]   = useState(true);
@@ -68,7 +70,12 @@ export default function LearnersScreen() {
             </Text>
           ) : (
             filtered.map((l) => (
-              <View key={l.id} style={styles.card}>
+              <TouchableOpacity
+                key={l.id}
+                style={styles.card}
+                onPress={() => router.push({ pathname: '/(tabs)/learner-detail', params: { id: l.id } } as any)}
+                activeOpacity={0.7}
+              >
                 <View style={styles.avatar}>
                   <Text style={styles.avatarText}>
                     {l.first_name[0]}{l.last_name[0]}
@@ -82,7 +89,8 @@ export default function LearnersScreen() {
                     {l.gender ? ` · ${l.gender}` : ''}
                   </Text>
                 </View>
-              </View>
+                <Ionicons name="chevron-forward" size={16} color="#334155" />
+              </TouchableOpacity>
             ))
           )}
         </ScrollView>

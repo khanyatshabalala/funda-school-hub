@@ -20,12 +20,12 @@ const parentTabs: Tab[] = [
   { name: 'profile',    title: 'Profile',       icon: 'person-outline',        iconFocused: 'person' },
 ];
 
-// School staff: Home · Learners · Discipline · Calendar · Profile
+// School staff / school admin: Home · Learners · Discipline · Staff · Profile
 const schoolTabs: Tab[] = [
   { name: 'index',               title: 'Home',       icon: 'home-outline',       iconFocused: 'home' },
   { name: 'learners',            title: 'Learners',   icon: 'people-outline',     iconFocused: 'people' },
-  { name: 'attendance-capture',  title: 'Attendance', icon: 'checkmark-circle-outline', iconFocused: 'checkmark-circle' },
   { name: 'discipline',          title: 'Discipline', icon: 'shield-outline',     iconFocused: 'shield' },
+  { name: 'staff',               title: 'Staff',      icon: 'people-outline',     iconFocused: 'people' },
   { name: 'profile',             title: 'Profile',    icon: 'person-outline',     iconFocused: 'person' },
 ];
 
@@ -35,7 +35,8 @@ const hiddenParentScreens = [
   'children', 'report-cards', 'schools', 'upgrade',
   'exam-timetable', 'attendance',
   'attendance-capture', 'learners', 'link-requests',
-  'assistant',
+  'assistant', 'staff', 'classes', 'transfers', 'learner-detail',
+  'report-cards-upload',
 ];
 
 // Staff: calendar, alerts are hidden (not in staff tabs but navigable)
@@ -43,7 +44,7 @@ const hiddenStaffScreens = [
   'children', 'report-cards', 'schools', 'upgrade',
   'exam-timetable', 'attendance',
   'alerts', 'calendar', 'link-requests', 'report-cards-upload',
-  'assistant',
+  'assistant', 'staff', 'classes', 'transfers', 'learner-detail',
 ];
 
 export default function TabLayout() {

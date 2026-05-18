@@ -200,6 +200,9 @@ function SchoolHome() {
     { label: 'Discipline', icon: 'shield', route: '/(tabs)/discipline' },
     { label: 'Calendar', icon: 'calendar', route: '/(tabs)/calendar' },
     { label: 'Exam timetable', icon: 'list', route: '/(tabs)/exam-timetable' },
+    { label: 'Classes', icon: 'school', route: '/(tabs)/classes' },
+    { label: 'Staff', icon: 'people-circle', route: '/(tabs)/staff' },
+    { label: 'Transfers', icon: 'swap-horizontal', route: '/(tabs)/transfers' },
     { label: 'Alerts', icon: 'notifications', route: '/(tabs)/alerts' },
     { label: 'AI Assistant', icon: 'sparkles', route: '/(tabs)/assistant' },
   ];
